@@ -1,0 +1,8 @@
+{
+  "buildOptions": {},
+  "compilerOptions": {
+    "moduleResolution": "Bundler",
+    "module": "ESNext",
+    "lib": ["ESNext"]
+  }
+}
