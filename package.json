@@ -27,11 +27,18 @@
   },
   "type": "module",
   "exports": {
-    ".": {
-      "import": "./dist/index.js"
+    ".": {},
+    "./browser": {
+      "import": "./dist/browser/index.js"
     },
-    "./dev": {
-      "import": "./src/index.ts"
+    "./server": {
+      "import": "./dist/server/index.js"
+    },
+    "./dev/browser": {
+      "import": "./src/browser/index.ts"
+    },
+    "./dev/server": {
+      "import": "./src/server/index.ts"
     }
   }
 }

@@ -1,15 +1,19 @@
-import { mre, ne, runtime } from "r-web";
+import { NewElement, NE, WatchEvent, AddElement } from "r-web/dev/browser";
 
-mre(document.body);
+const root = document.getElementById("app")!;
 
-const helloWorld = ne(
+WatchEvent(root);
+
+const helloWorld = NewElement(
   "a",
-  { id: "hello-world", href: new URL("https://example.com").toString() },
-  { display: "flex" },
+  { id: "hello-world", href: new URL("https://example.com").toString(), className: "Hello" },
+  { display: "static" },
   (type, event) => {
     console.log(type, event);
   },
   "Hello, World!"
 );
 
-runtime.rootElement.appendChild(ne("div", undefined, undefined, undefined, helloWorld, ne("br"), "Hello, World!"));
+AddElement(root, helloWorld);
+
+AddElement(helloWorld, NE("br"), NE("span", { className: "World" }, { display: "flex" }, undefined, "Hello, World, Again!"));
