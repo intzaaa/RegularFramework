@@ -1,19 +1,32 @@
-import { NewElement, NE, WatchEvent, AddElement } from "r-web/dev/browser";
+import { ne, wre, ae, ue, signal, effect } from "r-web/dev/browser";
 
-const root = document.getElementById("app")!;
+wre(document.body);
 
-WatchEvent(root);
+const count = signal(0);
 
-const helloWorld = NewElement(
-  "a",
-  { id: "hello-world", href: new URL("https://example.com").toString(), className: "Hello" },
-  { display: "static" },
-  (type, event) => {
-    console.log(type, event);
-  },
-  "Hello, World!"
+const NewCountElement = (num: number) => ne("p", { id: "c" }, `Count: ${num}`);
+
+const CountElement = NewCountElement(0);
+
+ae(
+  document.body,
+  ne("p", {}, "Hello, World!"),
+  CountElement,
+  ne(
+    "button",
+    {
+      events: (event) => {
+        if (event.type === "click") {
+          count.value = count.value + 1;
+        }
+      },
+    },
+    "Click me!"
+  )
 );
 
-AddElement(root, helloWorld);
-
-AddElement(helloWorld, NE("br"), NE("span", { className: "World" }, { display: "flex" }, undefined, "Hello, World, Again!"));
+effect(() => {
+  console.log(count.value);
+  ue(document.getElementById("c")!, NewCountElement(count.value));
+  console.log(document.getElementById("c")?.isEqualNode(CountElement));
+});

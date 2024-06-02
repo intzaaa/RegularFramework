@@ -1,5 +1,5 @@
-import { element } from "../lib/element";
+import { GetVElement } from "../base/element";
 
-export const { NewElement, WatchEvent, AddElement } = element(globalThis.window);
+export const { NewElement, AddElement, RemoveElement, UpdateElement, WatchRootElement } = GetVElement(globalThis.window);
 
-export { NewElement as NE, WatchEvent as WE, AddElement as AE };
+export { NewElement as ne, AddElement as ae, RemoveElement as re, UpdateElement as ue, WatchRootElement as wre };

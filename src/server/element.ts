@@ -1,7 +1,7 @@
 import { JSDOM } from "jsdom";
 
-import { element } from "../lib/element";
+import { GetVElement } from "../base/element";
 
-export const { NewElement, WatchEvent, AddElement } = element(new JSDOM().window);
+export const { NewElement, AddElement, RemoveElement, UpdateElement, WatchRootElement } = GetVElement(new JSDOM().window);
 
-export { NewElement as NE, WatchEvent as WE, AddElement as AE };
+export { NewElement as ne, AddElement as ae, RemoveElement as re, UpdateElement as ue, WatchRootElement as wre };
