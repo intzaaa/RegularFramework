@@ -68,7 +68,7 @@ ae(
         }
       },
     },
-    () => (async.value.length < 10 ? "Click to load" : "Click to reload")
+    () => (async.value.split("\n").length < 2 ? "Click to load" : "Click to reload")
   ),
   hr
 );
