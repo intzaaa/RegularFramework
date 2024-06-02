@@ -13,7 +13,7 @@
     "vite": "^5.2.0"
   },
   "dependencies": {
-    "r-web": "link:..\\..",
+    "r-web": "link:../..",
     "ramda": "^0.30.0"
   }
 }

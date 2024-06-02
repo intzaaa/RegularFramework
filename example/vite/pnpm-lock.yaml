@@ -9,7 +9,7 @@ importers:
   .:
     dependencies:
       r-web:
-        specifier: link:..\..
+        specifier: link:../..
         version: link:../..
       ramda:
         specifier: ^0.30.0
