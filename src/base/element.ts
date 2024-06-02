@@ -25,11 +25,11 @@ type _ = {
   WatchRootElement: (rootElement: ValueOrFunction<Element>) => void;
 };
 
-new CustomEvent("receive", {
-  detail: {
-    type: "receive",
-  },
-});
+// new CustomEvent("receive", {
+//   detail: {
+//     type: "receive",
+//   },
+// });
 
 export const GetVerbElement = (window: Window | JSDOM["window"]): _ => {
   const _: _ = {
@@ -38,13 +38,14 @@ export const GetVerbElement = (window: Window | JSDOM["window"]): _ => {
       const _attributes = GetValue(attributes);
 
       for (const key in _attributes) {
-        if (!["styles", "classes", "events"].includes(key)) element.setAttribute(key, attributes[GetValue(key)]);
+        if (!["styles", "classes", "events"].includes(key)) element.setAttribute(key, _attributes[GetValue(key)]);
       }
 
       Object.assign(element.style, GetValue(_attributes?.styles));
       Object.assign(element.classList, GetValue(_attributes?.classes));
 
-      element.addEventListener("receive", (event: CustomEvent) => {
+      element.addEventListener("receive", (event) => {
+        // @ts-ignore
         if (_attributes?.events) _attributes.events(event.detail.data);
       });
 
@@ -88,8 +89,7 @@ export const GetVerbElement = (window: Window | JSDOM["window"]): _ => {
         if (key.startsWith("on")) {
           try {
             GetValue(rootElement).addEventListener(key.slice(2), (event) => {
-              Object.assign(event.currentTarget, null);
-              event.target.dispatchEvent(new CustomEvent("receive", { detail: { data: event } }));
+              event.target?.dispatchEvent(new CustomEvent("receive", { detail: { data: event } }));
             });
           } catch (error) {}
         }
