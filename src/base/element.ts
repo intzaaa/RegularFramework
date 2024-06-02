@@ -2,27 +2,31 @@ import type * as CSS from "csstype";
 import { effect } from "./library/signal";
 import type { JSDOM } from "jsdom";
 
-import { GetValue, ValueOrFunction } from "./library/value";
+import { GetValue, ValueFunctionSignal } from "./library/value";
 
-type Events = (event: Event) => void;
+type _Event = Event & {
+  type: string | "added" | "removed";
+};
+
+type Events = (event: _Event) => void;
 
 type _ = {
   NewElement: <T extends keyof HTMLElementTagNameMap>(
-    tag: ValueOrFunction<T>,
-    attributes?: ValueOrFunction<
+    tag: ValueFunctionSignal<T>,
+    attributes?: ValueFunctionSignal<
       Partial<{
-        [key: string]: ValueOrFunction<any>;
-        styles?: ValueOrFunction<CSS.Properties>;
-        classes?: ValueOrFunction<string[]>;
+        [key: string]: ValueFunctionSignal<any>;
+        styles?: ValueFunctionSignal<CSS.Properties>;
+        classes?: ValueFunctionSignal<string[]>;
         events?: Events;
       }>
     >,
-    ...children: ValueOrFunction<string | Element>[]
+    ...children: ValueFunctionSignal<any>[]
   ) => Element;
-  AddElement: (parent: ValueOrFunction<Element>, ...children: ValueOrFunction<string | Element>[]) => Element;
-  RemoveElement: (parent: ValueOrFunction<Element>, ...children: ValueOrFunction<Element>[]) => void;
-  UpdateElement: (target: ValueOrFunction<Element>, source: ValueOrFunction<Element>) => Element;
-  WatchRootElement: (rootElement: ValueOrFunction<Element>) => void;
+  AddElement: (parent: ValueFunctionSignal<Element>, ...children: ValueFunctionSignal<any>[]) => Element;
+  RemoveElement: (parent: ValueFunctionSignal<Element>, ...children: ValueFunctionSignal<Element>[]) => void;
+  UpdateElement: (target: ValueFunctionSignal<Element>, source: ValueFunctionSignal<Element>) => Element;
+  WatchRootElement: (rootElement: ValueFunctionSignal<Element>) => void;
 };
 
 // new CustomEvent("receive", {
@@ -52,7 +56,7 @@ export const GetVerbElement = (window: Window | JSDOM["window"]): _ => {
       children.forEach((child, index) => {
         effect(() => {
           if (element.childNodes[index]) {
-            element.childNodes[index].replaceWith(GetValue(child));
+            element.childNodes[index]?.replaceWith(GetValue(child));
           } else {
             element.append(GetValue(child));
           }
@@ -67,7 +71,7 @@ export const GetVerbElement = (window: Window | JSDOM["window"]): _ => {
         effect(() => {
           const _index = _parent.childNodes.length + index;
           if (_parent.childNodes[_index]) {
-            _parent.childNodes[_index].replaceWith(GetValue(child));
+            _parent.childNodes[_index]?.replaceWith(GetValue(child));
           } else {
             _parent.append(GetValue(child));
           }
@@ -85,14 +89,48 @@ export const GetVerbElement = (window: Window | JSDOM["window"]): _ => {
       return _source;
     },
     WatchRootElement(rootElement) {
+      const _rootElement = GetValue(rootElement);
       Object.keys(window).forEach((key) => {
         if (key.startsWith("on")) {
           try {
-            GetValue(rootElement).addEventListener(key.slice(2), (event) => {
+            _rootElement.addEventListener(key.slice(2), (event) => {
               event.target?.dispatchEvent(new CustomEvent("receive", { detail: { data: event } }));
             });
           } catch (error) {}
         }
+      });
+      new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          mutation.addedNodes.forEach((node: Node) => {
+            if (node instanceof HTMLElement) {
+              node.dispatchEvent(
+                new CustomEvent("receive", {
+                  detail: {
+                    data: {
+                      type: "add",
+                    },
+                  },
+                })
+              );
+            }
+          });
+          mutation.removedNodes.forEach((node: Node) => {
+            if (node instanceof HTMLElement) {
+              node.dispatchEvent(
+                new CustomEvent("receive", {
+                  detail: {
+                    data: {
+                      type: "remove",
+                    },
+                  },
+                })
+              );
+            }
+          });
+        });
+      }).observe(_rootElement, {
+        childList: true,
+        subtree: true,
       });
     },
   };

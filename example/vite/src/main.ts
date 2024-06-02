@@ -2,7 +2,7 @@ import { ne, wre, ae, signal, effect, GetVerb } from "r-web/dev/browser";
 
 wre(document.body);
 
-const count = signal("0");
+const count = signal(0);
 
 const hr = () => ne("hr");
 
@@ -13,13 +13,13 @@ ae(document.body, ne("h2", {}, "Hello, World!"), hr);
 ae(
   document.body,
   ne("h2", {}, "Counter"),
-  ne("p", {}, `Count: `, ne("b", {}, count)),
+  ne("p", {}, `Count: `, ne("b", {}, count), () => (count.value % 2 === 0 ? " (even)" : " (odd)")),
   ne(
     "button",
     {
       events: (event) => {
         if (event.type === "click") {
-          count.value = (parseInt(count.value) + 1).toString();
+          count.value = count.value + 1;
         }
       },
     },
