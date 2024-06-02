@@ -31,7 +31,7 @@ new CustomEvent("receive", {
   },
 });
 
-export const GetVElement = (window: Window | JSDOM["window"]): _ => {
+export const GetVerbElement = (window: Window | JSDOM["window"]): _ => {
   const _: _ = {
     NewElement(tag, attributes, ...children) {
       const element = window.document.createElement(GetValue(tag));
