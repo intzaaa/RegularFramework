@@ -4,7 +4,7 @@ import type { JSDOM } from "jsdom";
 
 import { GetValue, ValueOrFunction } from "./library/value";
 
-type Events = (event: Event | CustomEvent) => void;
+type Events = (event: Event) => void;
 
 type _ = {
   NewElement: <T extends keyof HTMLElementTagNameMap>(
