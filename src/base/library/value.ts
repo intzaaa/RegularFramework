@@ -1,5 +1,13 @@
-export type ValueOrFunction<T> = T | (() => Exclude<T, Function>);
+import { Signal } from "./signal";
+
+export type ValueOrFunction<T> = T | (() => T) | Signal<T>;
 
 export const GetValue = <T>(input: ValueOrFunction<T>): T => {
-  return typeof input === "function" ? GetValue((input as () => T)()) : input;
+  if (typeof input === "function") {
+    return GetValue((input as () => T)());
+  } else if (input instanceof Signal) {
+    return input.value;
+  } else {
+    return input;
+  }
 };

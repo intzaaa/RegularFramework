@@ -21,7 +21,7 @@ type _ = {
   ) => Element;
   AddElement: (parent: ValueOrFunction<Element>, ...children: ValueOrFunction<string | Element>[]) => Element;
   RemoveElement: (parent: ValueOrFunction<Element>, ...children: ValueOrFunction<Element>[]) => void;
-  UpdateElement: (target: ValueOrFunction<Element>, ...source: ValueOrFunction<string | Element>[]) => void;
+  UpdateElement: (target: ValueOrFunction<Element>, source: ValueOrFunction<Element>) => Element;
   WatchRootElement: (rootElement: ValueOrFunction<Element>) => void;
 };
 
@@ -36,35 +36,52 @@ export const GetVerbElement = (window: Window | JSDOM["window"]): _ => {
     NewElement(tag, attributes, ...children) {
       const element = window.document.createElement(GetValue(tag));
       const _attributes = GetValue(attributes);
+
       for (const key in _attributes) {
         if (!["styles", "classes", "events"].includes(key)) element.setAttribute(key, attributes[GetValue(key)]);
       }
-      7;
+
       Object.assign(element.style, GetValue(_attributes?.styles));
       Object.assign(element.classList, GetValue(_attributes?.classes));
+
       element.addEventListener("receive", (event: CustomEvent) => {
-        if (_attributes.events) _attributes.events(event.detail.data);
+        if (_attributes?.events) _attributes.events(event.detail.data);
       });
-      effect(() => {
-        _.AddElement(element, ...children);
+
+      children.forEach((child, index) => {
+        effect(() => {
+          if (element.childNodes[index]) {
+            element.childNodes[index].replaceWith(GetValue(child));
+          } else {
+            element.append(GetValue(child));
+          }
+        });
       });
       return element;
     },
+
     AddElement(parent, ...children) {
       const _parent = GetValue(parent);
-      effect(() => {
-        _parent.append(...children.map((c) => GetValue(c)));
+      children.forEach((child, index) => {
+        effect(() => {
+          const _index = _parent.childNodes.length + index;
+          if (_parent.childNodes[_index]) {
+            _parent.childNodes[_index].replaceWith(GetValue(child));
+          } else {
+            _parent.append(GetValue(child));
+          }
+        });
       });
       return _parent;
     },
     RemoveElement(parent, ...children) {
       const _parent = GetValue(parent);
-      effect(() => {
-        children.forEach((child) => _parent.removeChild(GetValue(child)));
-      });
+      children.forEach((child) => _parent.removeChild(GetValue(child)));
     },
-    UpdateElement(target, ...source) {
-      GetValue(target).replaceWith(...source.map((c) => GetValue(c)));
+    UpdateElement(target, source) {
+      const _source = GetValue(source);
+      GetValue(target).replaceWith(_source);
+      return _source;
     },
     WatchRootElement(rootElement) {
       Object.keys(window).forEach((key) => {

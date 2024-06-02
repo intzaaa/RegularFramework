@@ -11,6 +11,9 @@ importers:
       r-web:
         specifier: link:..\..
         version: link:../..
+      ramda:
+        specifier: ^0.30.0
+        version: 0.30.0
     devDependencies:
       typescript:
         specifier: ^5.2.2
@@ -273,6 +276,9 @@ packages:
     resolution: {integrity: sha512-Wglpdk03BSfXkHoQa3b/oulrotAkwrlLDRSOb9D0bN86FdRyE9lppSp33aHNPgBa0JKCoB+drFLZkQoRRYae5A==}
     engines: {node: ^10 || ^12 || >=14}
 
+  ramda@0.30.0:
+    resolution: {integrity: sha512-13Y0iMhIQuAm/wNGBL/9HEqIfRGmNmjKnTPlKWfA9f7dnDkr8d45wQ+S7+ZLh/Pq9PdcGxkqKUEA7ySu1QSd9Q==}
+
   rollup@4.18.0:
     resolution: {integrity: sha512-QmJz14PX3rzbJCN1SG4Xe/bAAX2a6NpCP8ab2vfu2GiUr8AQcr2nCV/oEO3yneFarB67zk8ShlIyWb2LGTb3Sg==}
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
@@ -474,6 +480,8 @@ snapshots:
       nanoid: 3.3.7
       picocolors: 1.0.1
       source-map-js: 1.2.0
+
+  ramda@0.30.0: {}
 
   rollup@4.18.0:
     dependencies:
