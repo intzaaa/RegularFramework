@@ -6,4 +6,4 @@ export { NewSignal as nsi, NewComputedSignal as ncs, NewEffect as nef, NewBatch 
 
 export { Signal } from "@preact/signals-core";
 
-export type * from "@preact/signals-core";
+export type { ReadonlySignal } from "@preact/signals-core";

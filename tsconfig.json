@@ -1,4 +1,6 @@
 {
+  "include": ["src/**/*"],
+  "exclude": ["example/**/*"],
   "buildOptions": {},
   "compilerOptions": {
     "isolatedModules": true,

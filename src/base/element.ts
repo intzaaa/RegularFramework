@@ -9,14 +9,11 @@ type LifecycleEvents = {
   target: Node;
 };
 
-type Events = Event | LifecycleEvents;
+export type Events = Event | LifecycleEvents;
 
 export type Styles = CSS.Properties;
 
-/**
- * Represents a collection of utility functions related to creating and manipulating HTML elements.
- */
-type _ = {
+export type ElementFunction = {
   /**
    * Creates a new HTML element with the specified tag name, attributes, and children.
    *
@@ -66,8 +63,8 @@ type _ = {
   WatchRootElement: (rootElement: Final<Element>, callback?: (event: Events) => any) => void;
 };
 
-export const GetVerbElement = (window: Window | JSDOM["window"]): _ => {
-  const _: _ = {
+export const GetElementFunction = (window: Window | JSDOM["window"]): ElementFunction => {
+  const _: ElementFunction = {
     NewElement(tag, attributes, ...children) {
       const element = window.document.createElement(GetValue(tag));
       const _attributes = GetValue(attributes);

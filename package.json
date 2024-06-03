@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "tsx ./src/test/index.ts",
-    "build": "tsup"
+    "build": "tsup",
+    "typedocs": "typedoc"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +17,7 @@
     "tslib": "^2.6.2",
     "tsup": "^8.0.2",
     "tsx": "^4.11.0",
+    "typedoc": "^0.25.13",
     "typescript": "^5.4.5"
   },
   "dependencies": {
