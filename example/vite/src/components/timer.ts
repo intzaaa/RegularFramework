@@ -1,4 +1,4 @@
-import { NewElement, NewSignal, NewEffect } from "regular-framework/dev/browser";
+import { NewElement, NewSignal, NewEffect } from "regular-framework/dev/client";
 
 import styles from "./timer.module.css";
 
