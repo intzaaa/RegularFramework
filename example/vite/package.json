@@ -13,7 +13,9 @@
     "vite": "^5.2.0"
   },
   "dependencies": {
-    "r-web": "link:../..",
-    "ramda": "^0.30.0"
+    "@unocss/runtime": "^0.60.3",
+    "ramda": "^0.30.0",
+    "regular-framework": "link:../..",
+    "unocss": "^0.60.4"
   }
 }

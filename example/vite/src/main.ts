@@ -1,23 +1,37 @@
-import { ne, wre, ae, signal, effect, GetVerb } from "r-web/dev/browser";
+import { presetUno } from "unocss";
 
-wre(document.body);
+import initUnocssRuntime from "@unocss/runtime";
 
-const count = signal(0);
+import { ne, wre, ae, nsi, GetVerb, Styles } from "regular-framework/dev/browser";
+
+const root = document.getElementById("app")!;
+
+initUnocssRuntime({
+  defaults: {
+    presets: [presetUno],
+  },
+  autoPrefix: true,
+  rootElement: () => root,
+});
+
+wre(root);
+
+const count = nsi(0);
 
 const hr = () => ne("hr");
 
-ae(document.body, ne("h1", {}, "Vite + R-Web Example"), hr);
+ae(root, ne("h1", {}, "Vite + RegularFramework Example"), hr);
 
-ae(document.body, ne("h2", {}, "Hello, World!"), hr);
+ae(root, ne("h2", {}, "Hello, World!"), hr);
 
 ae(
-  document.body,
+  root,
   ne("h2", {}, "Counter"),
   ne("p", {}, `Count: `, ne("b", {}, count), () => (count.value % 2 === 0 ? " (even)" : " (odd)")),
   ne(
     "button",
     {
-      events: (event) => {
+      events(event) {
         if (event.type === "click") {
           count.value = count.value + 1;
         }
@@ -28,14 +42,14 @@ ae(
   hr
 );
 
-const input = signal("");
+const input = nsi("");
 
 ae(
-  document.body,
+  root,
   ne("h2", {}, "Input"),
   ne("p", {}, `Value: `, ne("b", {}, input)),
   ne("input", {
-    events: (event) => {
+    events(event) {
       if (event.type === "input") {
         input.value = (event.target as HTMLInputElement).value;
       }
@@ -44,12 +58,20 @@ ae(
   hr
 );
 
-const async = signal("Waiting...");
+const preStyle: Styles = {
+  padding: "10px",
+  border: "1px solid black",
+  width: "200px",
+  height: "100px",
+  overflowY: "scroll",
+};
+
+const async = nsi("Waiting...");
 
 ae(
-  document.body,
+  root,
   ne("h2", {}, "Async / Fallback"),
-  ne("p", {}, "Value: ", ne("pre", {}, async)),
+  ne("p", {}, "Value: ", ne("pre", { styles: { ...preStyle, width: "400px", height: "200px" } }, async)),
   ne(
     "button",
     {
@@ -73,9 +95,59 @@ ae(
   hr
 );
 
+const showP = nsi(false);
+const log = nsi<string[]>([]);
+const p = ne(
+  "p",
+  {
+    events: (event) => {
+      if (event.type === "add") {
+        log.value = [...log.value, "added!"];
+      }
+      if (event.type === "remove") {
+        log.value = [...log.value, "removed!"];
+      }
+    },
+  },
+  "Just a regular ",
+  ne("b", {}, "p"),
+  " element."
+);
+
 ae(
-  document.body,
-  ne("h2", {}, "List / Table"),
+  root,
+  ne("h2", {}, "Lifecycle"),
+  ne(
+    "pre",
+    {
+      styles: preStyle,
+    },
+    () => log.value.join("\n")
+  ),
+  () => (showP.value ? p : ne("p", {}, "Nothing to show")),
+  ne(
+    "button",
+    {
+      events: (event) => {
+        if (event.type === "click") {
+          showP.value = !showP.value;
+        }
+      },
+    },
+    "Click to add / remove"
+  ),
+  hr
+);
+
+ae(
+  root,
+  ne(
+    "h2",
+    {
+      class: "text-blue-500",
+    },
+    "List / Table"
+  ),
   ne(
     "table",
     {},
@@ -99,7 +171,3 @@ ae(
     )
   )
 );
-
-effect(() => {
-  console.log(count.value);
-});

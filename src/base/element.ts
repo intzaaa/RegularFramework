@@ -1,14 +1,17 @@
 import type * as CSS from "csstype";
-import { effect } from "./library/signal";
 import type { JSDOM } from "jsdom";
 
+import { NewEffect } from "./library/signal";
 import { GetValue, ValueFunctionSignal } from "./library/value";
 
-type _Event = Event & {
-  type: string | "added" | "removed";
+type LifecycleEvents = {
+  type: "add" | "remove";
+  target: Node;
 };
 
-type Events = (event: _Event) => void;
+type Events = Event | LifecycleEvents;
+
+export type Styles = CSS.Properties;
 
 type _ = {
   NewElement: <T extends keyof HTMLElementTagNameMap>(
@@ -16,24 +19,17 @@ type _ = {
     attributes?: ValueFunctionSignal<
       Partial<{
         [key: string]: ValueFunctionSignal<any>;
-        styles?: ValueFunctionSignal<CSS.Properties>;
-        classes?: ValueFunctionSignal<string[]>;
-        events?: Events;
+        styles?: ValueFunctionSignal<Styles>;
+        events?: (events: Events) => void;
       }>
     >,
     ...children: ValueFunctionSignal<any>[]
   ) => Element;
   AddElement: (parent: ValueFunctionSignal<Element>, ...children: ValueFunctionSignal<any>[]) => Element;
-  RemoveElement: (parent: ValueFunctionSignal<Element>, ...children: ValueFunctionSignal<Element>[]) => void;
+  // RemoveElement: (parent: ValueFunctionSignal<Element>, ...children: ValueFunctionSignal<Element>[]) => void;
   UpdateElement: (target: ValueFunctionSignal<Element>, source: ValueFunctionSignal<Element>) => Element;
-  WatchRootElement: (rootElement: ValueFunctionSignal<Element>) => void;
+  WatchRootElement: (rootElement: ValueFunctionSignal<Element>, callback?: (event: Events) => any) => void;
 };
-
-// new CustomEvent("receive", {
-//   detail: {
-//     type: "receive",
-//   },
-// });
 
 export const GetVerbElement = (window: Window | JSDOM["window"]): _ => {
   const _: _ = {
@@ -42,19 +38,22 @@ export const GetVerbElement = (window: Window | JSDOM["window"]): _ => {
       const _attributes = GetValue(attributes);
 
       for (const key in _attributes) {
-        if (!["styles", "classes", "events"].includes(key)) element.setAttribute(key, _attributes[GetValue(key)]);
+        NewEffect(() => {
+          if (!["styles", "events"].includes(key)) element.setAttribute(key, _attributes[GetValue(key)]);
+        });
       }
 
-      Object.assign(element.style, GetValue(_attributes?.styles));
-      Object.assign(element.classList, GetValue(_attributes?.classes));
+      NewEffect(() => {
+        Object.assign(element.style, GetValue(_attributes?.styles));
+      });
 
       element.addEventListener("receive", (event) => {
         // @ts-ignore
-        if (_attributes?.events) _attributes.events(event.detail.data);
+        _attributes.events?.(event.detail.data);
       });
 
       children.forEach((child, index) => {
-        effect(() => {
+        NewEffect(() => {
           if (element.childNodes[index]) {
             element.childNodes[index]?.replaceWith(GetValue(child));
           } else {
@@ -67,9 +66,10 @@ export const GetVerbElement = (window: Window | JSDOM["window"]): _ => {
 
     AddElement(parent, ...children) {
       const _parent = GetValue(parent);
+      const length = _parent.childNodes.length;
       children.forEach((child, index) => {
-        effect(() => {
-          const _index = _parent.childNodes.length + index;
+        const _index = length + index;
+        NewEffect(() => {
           if (_parent.childNodes[_index]) {
             _parent.childNodes[_index]?.replaceWith(GetValue(child));
           } else {
@@ -79,22 +79,26 @@ export const GetVerbElement = (window: Window | JSDOM["window"]): _ => {
       });
       return _parent;
     },
-    RemoveElement(parent, ...children) {
-      const _parent = GetValue(parent);
-      children.forEach((child) => _parent.removeChild(GetValue(child)));
-    },
+
+    // RemoveElement(parent, ...children) {
+    //   const _parent = GetValue(parent);
+    //   children.forEach((child) => _parent.removeChild(GetValue(child)));
+    // },
+
     UpdateElement(target, source) {
       const _source = GetValue(source);
       GetValue(target).replaceWith(_source);
       return _source;
     },
-    WatchRootElement(rootElement) {
+
+    WatchRootElement(rootElement, callback) {
       const _rootElement = GetValue(rootElement);
       Object.keys(window).forEach((key) => {
         if (key.startsWith("on")) {
           try {
             _rootElement.addEventListener(key.slice(2), (event) => {
               event.target?.dispatchEvent(new CustomEvent("receive", { detail: { data: event } }));
+              callback?.(event);
             });
           } catch (error) {}
         }
@@ -102,30 +106,26 @@ export const GetVerbElement = (window: Window | JSDOM["window"]): _ => {
       new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
           mutation.addedNodes.forEach((node: Node) => {
-            if (node instanceof HTMLElement) {
-              node.dispatchEvent(
-                new CustomEvent("receive", {
-                  detail: {
-                    data: {
-                      type: "add",
-                    },
-                  },
-                })
-              );
-            }
+            const data: LifecycleEvents = { type: "add", target: node };
+            node.dispatchEvent(
+              new CustomEvent("receive", {
+                detail: {
+                  data: data,
+                },
+              })
+            );
+            callback?.(data);
           });
           mutation.removedNodes.forEach((node: Node) => {
-            if (node instanceof HTMLElement) {
-              node.dispatchEvent(
-                new CustomEvent("receive", {
-                  detail: {
-                    data: {
-                      type: "remove",
-                    },
-                  },
-                })
-              );
-            }
+            const data: LifecycleEvents = { type: "remove", target: node };
+            node.dispatchEvent(
+              new CustomEvent("receive", {
+                detail: {
+                  data: data,
+                },
+              })
+            );
+            callback?.(data);
           });
         });
       }).observe(_rootElement, {

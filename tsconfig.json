@@ -1,6 +1,7 @@
 {
   "buildOptions": {},
   "compilerOptions": {
+    "isolatedModules": true,
     "moduleResolution": "Bundler",
     "module": "ESNext",
     "target": "ESNext",
