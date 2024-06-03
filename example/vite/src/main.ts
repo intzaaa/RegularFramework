@@ -1,10 +1,15 @@
-import { presetUno } from "unocss";
-
+import { presetUno } from "unocss/preset-uno";
 import initUnocssRuntime from "@unocss/runtime";
 
 import { ne, wre, ae, nsi, GetVerb, Styles } from "regular-framework/dev/browser";
 
-const root = document.getElementById("app")!;
+const root = ne("div", {
+  styles: {
+    display: "contents",
+  },
+})!;
+
+ae(document.body, root);
 
 initUnocssRuntime({
   defaults: {
@@ -139,15 +144,42 @@ ae(
   hr
 );
 
+const unocss = nsi("bg-red-500 text-white p-2 rounded-md");
+
 ae(
   root,
   ne(
     "h2",
     {
-      class: "text-blue-500",
+      styles: {
+        color: "red",
+      },
     },
-    "List / Table"
+    "UnoCSS"
   ),
+  ne(
+    "div",
+    {
+      class: unocss,
+    },
+    "Hello, UnoCSS!"
+  ),
+  ne("textarea", {
+    events(event) {
+      if (event.type === "add") {
+        (event.target as HTMLInputElement).value = unocss.value;
+      }
+      if (event.type === "input") {
+        unocss.value = (event.target as HTMLInputElement).value;
+      }
+    },
+  }),
+  hr
+);
+
+ae(
+  root,
+  ne("h2", {}, "List / Table"),
   ne(
     "table",
     {},
