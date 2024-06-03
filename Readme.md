@@ -44,7 +44,7 @@ AddElement(document.body, root);
 AddElement(root, NewElement('h1', {}, 'Hello, world!'));
 ```
 
-### 5. Do things more quickly with shortcuts
+### 5. Do things faster with aliases
 
 - `AddElement`: `ae`
 - `NewElement`: `ne`
@@ -55,21 +55,23 @@ AddElement(root, NewElement('h1', {}, 'Hello, world!'));
 
 ```ts
 const signal = NewSignal('Hi!');
-AddElement(root, NewElement('h1', {}, signal);
+AddElement(root, NewElement('h1', {}, signal));
 signal.value = 'Bye!';
 ```
 
 ### 6. `Final<T>` & `GetValue`: Understand what makes RegularFramework so powerful
 
 ```ts
-GetValue(() => () => 'Powerful') === 'Powerful' // true;
-GetValue(() => signal) === 'Bye!' // true;
-GetValue(114514) === 114514 // true, of course;
+GetValue(() => () => 'Powerful') === 'Powerful' // true
+GetValue(() => signal) === 'Bye!' // true
+GetValue(114514) === 114514 // true, of course
 ```
 
 ### 7. Visit the example site
 
 <https://regular-framework.pages.dev>
+
+The source code of the example site is available at `example/vite`.
 
 ---
 
