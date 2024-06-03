@@ -19,3 +19,5 @@ export const GetValue = <T>(input: ValueFunctionSignal<T>): T => {
     return input;
   }
 };
+
+export { GetValue as gvl, StopGetValue as sgv };
