@@ -1,6 +1,6 @@
 import { Signal } from "./signal";
 
-export type ValueFunctionSignal<T> = T | (() => ValueFunctionSignal<T>) | Signal<T>;
+export type Final<T> = T | (() => Final<T>) | Signal<T>;
 
 const STOP = Symbol("STOP");
 
@@ -8,7 +8,7 @@ export const StopGetValue = (input: any) => {
   return [STOP, input];
 };
 
-export const GetValue = <T>(input: ValueFunctionSignal<T>): T => {
+export const GetValue = <T>(input: Final<T>): T => {
   if (Array.isArray(input) && input[0] === STOP) {
     return input[1];
   } else if (typeof input === "function") {

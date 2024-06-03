@@ -2,7 +2,7 @@ import type * as CSS from "csstype";
 import type { JSDOM } from "jsdom";
 
 import { NewEffect } from "./library/signal";
-import { GetValue, ValueFunctionSignal } from "./library/value";
+import { GetValue, Final } from "./library/value";
 
 type LifecycleEvents = {
   type: "add" | "remove";
@@ -13,22 +13,57 @@ type Events = Event | LifecycleEvents;
 
 export type Styles = CSS.Properties;
 
+/**
+ * Represents a collection of utility functions related to creating and manipulating HTML elements.
+ */
 type _ = {
+  /**
+   * Creates a new HTML element with the specified tag name, attributes, and children.
+   *
+   * @param tag - The tag name of the element.
+   * @param attributes - Optional attributes to be applied to the element.
+   * @param children - Optional children elements to be appended to the element.
+   * @returns The created element.
+   */
   NewElement: <T extends keyof HTMLElementTagNameMap>(
-    tag: ValueFunctionSignal<T>,
-    attributes?: ValueFunctionSignal<
+    tag: Final<T>,
+    attributes?: Final<
       Partial<{
-        [key: string]: ValueFunctionSignal<any>;
-        styles?: ValueFunctionSignal<Styles>;
+        [key: string]: Final<any>;
+        styles?: Final<Styles>;
         events?: (events: Events) => void;
       }>
     >,
-    ...children: ValueFunctionSignal<any>[]
+    ...children: Final<any>[]
   ) => Element;
-  AddElement: (parent: ValueFunctionSignal<Element>, ...children: ValueFunctionSignal<any>[]) => Element;
+
+  /**
+   * Adds the specified children elements to the parent element.
+   *
+   * @param parent - The parent element to which the children elements will be added.
+   * @param children - The children elements to be added.
+   * @returns The parent element.
+   */
+  AddElement: (parent: Final<Element>, ...children: Final<any>[]) => Element;
+
   // RemoveElement: (parent: ValueFunctionSignal<Element>, ...children: ValueFunctionSignal<Element>[]) => void;
-  UpdateElement: (target: ValueFunctionSignal<Element>, source: ValueFunctionSignal<Element>) => Element;
-  WatchRootElement: (rootElement: ValueFunctionSignal<Element>, callback?: (event: Events) => any) => void;
+
+  /**
+   * Updates the target element with the properties and attributes of the source element.
+   *
+   * @param target - The element to be updated.
+   * @param source - The element from which the properties and attributes will be copied.
+   * @returns The updated element.
+   */
+  UpdateElement: (target: Final<Element>, source: Final<Element>) => Element;
+
+  /**
+   * Watches for changes in the root element and triggers a callback function when an event occurs.
+   *
+   * @param rootElement - The root element to watch for changes.
+   * @param callback - Optional callback function to be triggered when an event occurs.
+   */
+  WatchRootElement: (rootElement: Final<Element>, callback?: (event: Events) => any) => void;
 };
 
 export const GetVerbElement = (window: Window | JSDOM["window"]): _ => {

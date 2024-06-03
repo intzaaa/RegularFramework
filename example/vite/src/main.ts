@@ -1,7 +1,8 @@
-import { presetUno } from "unocss/preset-uno";
+import { presetMini } from "unocss/preset-mini";
 import initUnocssRuntime from "@unocss/runtime";
 
 import { ne, wre, ae, nsi, gvb, Styles } from "regular-framework/dev/browser";
+import { NewTimer } from "./components/timer";
 
 const root = ne("div", {
   styles: {
@@ -13,7 +14,7 @@ ae(document.body, root);
 
 initUnocssRuntime({
   defaults: {
-    presets: [presetUno],
+    presets: [presetMini],
   },
   autoPrefix: true,
   rootElement: () => root,
@@ -147,7 +148,7 @@ ae(
 const blur = nsi(0);
 setInterval(() => {
   blur.value = 2.5 * Math.random();
-}, 150);
+}, 1000);
 const unocss = nsi("bg-red-600 text-white p-2 m-4 w-48 text-center rounded-md");
 
 ae(
@@ -158,7 +159,7 @@ ae(
       styles() {
         return {
           filter: `blur(${blur.value}px)`,
-          transition: "filter 0.15s",
+          transition: "filter 2s",
         };
       },
     },
@@ -187,6 +188,8 @@ ae(
   }),
   hr
 );
+
+ae(root, NewTimer(), hr);
 
 ae(
   root,
