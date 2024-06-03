@@ -48,8 +48,10 @@ export const GetVerbElement = (window: Window | JSDOM["window"]): _ => {
       });
 
       element.addEventListener("receive", (event) => {
-        // @ts-ignore
-        _attributes.events?.(event.detail.data);
+        _attributes?.events?.(
+          // @ts-ignore
+          event.detail.data
+        );
       });
 
       children.forEach((child, index) => {
