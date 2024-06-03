@@ -1,7 +1,7 @@
 import { presetMini } from "unocss/preset-mini";
 import initUnocssRuntime from "@unocss/runtime";
 
-import { ne, wre, ae, nsi, gvb, Styles, nit } from "regular-framework/dev/browser";
+import { ne, wre, ae, nsi, gvb, Styles, nit } from "regular-framework/dev/client";
 import { NewTimer } from "./components/timer";
 
 const root = ne("div", {

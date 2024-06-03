@@ -1,11 +1,11 @@
 {
   "name": "regular-framework",
-  "version": "0.1.1",
+  "version": "0.1.3",
   "description": "RegularFramework is a new framework for building web pages that is simple, powerful, and elegant.",
   "scripts": {
     "test": "tsx ./src/test/index.ts",
     "build": "tsup",
-    "typedocs": "typedoc"
+    "typedoc": "typedoc"
   },
   "private": false,
   "keywords": [
@@ -43,7 +43,7 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
-    "./browser": {
+    "./client": {
       "import": "./dist/client.js",
       "require": "./dist/client.cjs"
     },
@@ -54,7 +54,7 @@
     "./dev": {
       "import": "./src/index.ts"
     },
-    "./dev/browser": {
+    "./dev/client": {
       "import": "./src/client.ts"
     },
     "./dev/server": {
