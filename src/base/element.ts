@@ -63,7 +63,7 @@ export type ElementFunction = {
   WatchRootElement: (rootElement: Final<Element>, callback?: (event: Events) => any) => void;
 };
 
-export const GetElementFunction = (window: Window | JSDOM["window"]): ElementFunction => {
+export const GetElementFunction = (window: Window | JSDOM["window"]) => {
   const _: ElementFunction = {
     NewElement(tag, attributes, ...children) {
       const element = window.document.createElement(GetValue(tag));
@@ -176,5 +176,11 @@ export const GetElementFunction = (window: Window | JSDOM["window"]): ElementFun
       });
     },
   };
-  return _;
+  return {
+    ..._,
+    ne: _.NewElement,
+    ae: _.AddElement,
+    ue: _.UpdateElement,
+    wre: _.WatchRootElement,
+  };
 };

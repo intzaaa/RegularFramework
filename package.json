@@ -1,15 +1,21 @@
 {
   "name": "regular-framework",
-  "version": "0.0.1",
-  "description": "",
-  "main": "index.js",
+  "version": "0.1.0",
+  "description": "RegularFramework is a new framework for building web pages that is simple, powerful, and elegant.",
   "scripts": {
     "test": "tsx ./src/test/index.ts",
     "build": "tsup",
     "typedocs": "typedoc"
   },
-  "keywords": [],
-  "author": "",
+  "private": false,
+  "keywords": [
+    "regular",
+    "framework",
+    "ui"
+  ],
+  "repository": {
+    "url": "https://github.com/intzaaa/RegularFramework"
+  },
   "license": "ISC",
   "packageManager": "pnpm@9.1.1+sha512.14e915759c11f77eac07faba4d019c193ec8637229e62ec99eefb7cf3c3b75c64447882b7c485142451ee3a6b408059cdfb7b7fa0341b975f12d0f7629c71195",
   "devDependencies": {
@@ -29,19 +35,30 @@
     "ramda": "^0.30.0"
   },
   "type": "module",
+  "files": [
+    "dist"
+  ],
   "exports": {
-    ".": {},
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
     "./browser": {
-      "import": "./dist/browser/index.js"
+      "import": "./dist/client.js",
+      "require": "./dist/client.cjs"
     },
     "./server": {
-      "import": "./dist/server/index.js"
+      "import": "./dist/server.js",
+      "require": "./dist/server.cjs"
+    },
+    "./dev": {
+      "import": "./src/index.ts"
     },
     "./dev/browser": {
-      "import": "./src/browser/index.ts"
+      "import": "./src/client.ts"
     },
     "./dev/server": {
-      "import": "./src/server/index.ts"
+      "import": "./src/server.ts"
     }
   }
 }

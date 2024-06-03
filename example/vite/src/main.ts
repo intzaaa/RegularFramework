@@ -1,7 +1,7 @@
 import { presetMini } from "unocss/preset-mini";
 import initUnocssRuntime from "@unocss/runtime";
 
-import { ne, wre, ae, nsi, gvb, Styles } from "regular-framework/dev/browser";
+import { ne, wre, ae, nsi, gvb, Styles, nit } from "regular-framework/dev/browser";
 import { NewTimer } from "./components/timer";
 
 const root = ne("div", {
@@ -72,32 +72,36 @@ const preStyle: Styles = {
   overflowY: "scroll",
 };
 
-const async = nsi("Waiting...");
-
 ae(
   root,
   ne("h2", {}, "Async / Fallback"),
-  ne("p", {}, "Value: ", ne("pre", { styles: { ...preStyle, width: "400px", height: "200px" } }, async)),
-  ne(
-    "button",
-    {
-      events: (event) => {
-        if (event.type === "click") {
-          async.value = "Loading...";
-          const load = async () => {
-            const res = await fetch("https://www.cloudflare.com/cdn-cgi/trace");
-            if (res.ok) {
-              async.value = await res.text();
-            } else {
-              async.value = "Error!";
+  // Use NewIterator to place logic and layout in the same place instead of putting NewSignal at the top level
+  ...nit(() => {
+    const async = nsi("Waiting...");
+    return [
+      ne("p", {}, "Value: ", ne("pre", { styles: { ...preStyle, width: "400px", height: "200px" } }, async)),
+      ne(
+        "button",
+        {
+          events: (event) => {
+            if (event.type === "click") {
+              async.value = "Loading...";
+              const load = async () => {
+                const res = await fetch("https://www.cloudflare.com/cdn-cgi/trace");
+                if (res.ok) {
+                  async.value = await res.text();
+                } else {
+                  async.value = "Error!";
+                }
+              };
+              load();
             }
-          };
-          load();
-        }
-      },
-    },
-    () => (async.value.split("\n").length < 2 ? "Click to load" : "Click to reload")
-  ),
+          },
+        },
+        () => (async.value.split("\n").length < 2 ? "Click to load" : "Click to reload")
+      ),
+    ];
+  }),
   hr
 );
 
@@ -197,23 +201,25 @@ ae(
   ne(
     "table",
     {},
-    ne("tr", {}, ...Object.keys(gvb()[0]).map((verb) => ne("th", {}, verb))),
-    ...gvb().map((row) =>
-      ne(
-        "tr",
-        {},
-        ...Object.values(row).map((value) =>
-          ne(
-            "td",
-            {
-              styles: {
-                textAlign: "center",
+    ...nit(() => [
+      ne("tr", {}, ...Object.keys(gvb()[0]).map((verb) => ne("th", {}, verb))),
+      ...gvb().map((row) =>
+        ne(
+          "tr",
+          {},
+          ...Object.values(row).map((value) =>
+            ne(
+              "td",
+              {
+                styles: {
+                  textAlign: "center",
+                },
               },
-            },
-            value
+              value
+            )
           )
         )
-      )
-    )
+      ),
+    ])
   )
 );
