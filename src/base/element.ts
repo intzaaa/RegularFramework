@@ -44,7 +44,8 @@ export const GetVerbElement = (window: Window | JSDOM["window"]): _ => {
       }
 
       NewEffect(() => {
-        Object.assign(element.style, GetValue(_attributes?.styles));
+        const _styles = GetValue(_attributes?.styles);
+        Object.assign(element.style, _styles);
       });
 
       element.addEventListener("receive", (event) => {
@@ -97,11 +98,18 @@ export const GetVerbElement = (window: Window | JSDOM["window"]): _ => {
       const _rootElement = GetValue(rootElement);
       Object.keys(window).forEach((key) => {
         if (key.startsWith("on")) {
+          const _key = key.slice(2).toLowerCase();
           try {
-            _rootElement.addEventListener(key.slice(2), (event) => {
-              event.target?.dispatchEvent(new CustomEvent("receive", { detail: { data: event } }));
-              callback?.(event);
-            });
+            _rootElement.addEventListener(
+              _key,
+              (event) => {
+                event.target?.dispatchEvent(new CustomEvent("receive", { detail: { data: event } }));
+                callback?.(event);
+              },
+              {
+                passive: ["wheel", "mousewheel", "touchstart", "touchmove"].includes(_key) ? true : false,
+              }
+            );
           } catch (error) {}
         }
       });

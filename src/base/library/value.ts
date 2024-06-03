@@ -1,6 +1,6 @@
 import { Signal } from "./signal";
 
-export type ValueFunctionSignal<T> = T | (() => T) | Signal<T>;
+export type ValueFunctionSignal<T> = T | (() => ValueFunctionSignal<T>) | Signal<T>;
 
 const STOP = Symbol("STOP");
 

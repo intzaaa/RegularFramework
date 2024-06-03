@@ -1,7 +1,7 @@
 import { presetUno } from "unocss/preset-uno";
 import initUnocssRuntime from "@unocss/runtime";
 
-import { ne, wre, ae, nsi, GetVerb, Styles } from "regular-framework/dev/browser";
+import { ne, wre, ae, nsi, gvb, Styles } from "regular-framework/dev/browser";
 
 const root = ne("div", {
   styles: {
@@ -100,7 +100,7 @@ ae(
   hr
 );
 
-const showP = nsi(false);
+const ifShowP = nsi(false);
 const log = nsi<string[]>([]);
 const p = ne(
   "p",
@@ -129,13 +129,13 @@ ae(
     },
     () => log.value.join("\n")
   ),
-  () => (showP.value ? p : ne("p", {}, "Nothing to show")),
+  () => (ifShowP.value ? p : ""),
   ne(
     "button",
     {
       events: (event) => {
         if (event.type === "click") {
-          showP.value = !showP.value;
+          ifShowP.value = !ifShowP.value;
         }
       },
     },
@@ -144,15 +144,22 @@ ae(
   hr
 );
 
-const unocss = nsi("bg-red-500 text-white p-2 rounded-md");
+const blur = nsi(0);
+setInterval(() => {
+  blur.value = 2.5 * Math.random();
+}, 150);
+const unocss = nsi("bg-red-600 text-white p-2 m-4 w-48 text-center rounded-md");
 
 ae(
   root,
   ne(
     "h2",
     {
-      styles: {
-        color: "red",
+      styles() {
+        return {
+          filter: `blur(${blur.value}px)`,
+          transition: "filter 0.15s",
+        };
       },
     },
     "UnoCSS"
@@ -165,6 +172,10 @@ ae(
     "Hello, UnoCSS!"
   ),
   ne("textarea", {
+    styles: {
+      width: "400px",
+      minHeight: "100px",
+    },
     events(event) {
       if (event.type === "add") {
         (event.target as HTMLInputElement).value = unocss.value;
@@ -183,8 +194,8 @@ ae(
   ne(
     "table",
     {},
-    ne("tr", {}, ...Object.keys(GetVerb()[0]).map((verb) => ne("th", {}, verb))),
-    ...GetVerb().map((row) =>
+    ne("tr", {}, ...Object.keys(gvb()[0]).map((verb) => ne("th", {}, verb))),
+    ...gvb().map((row) =>
       ne(
         "tr",
         {},
