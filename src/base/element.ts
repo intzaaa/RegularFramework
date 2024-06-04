@@ -1,8 +1,8 @@
 import type * as CSS from "csstype";
 import type { JSDOM } from "jsdom";
 
-import { NewEffect } from "./library/signal";
-import { GetValue, Final } from "./library/value";
+import { NewEffect } from "../library/signal";
+import { GetValue, Final } from "../library/value";
 
 type LifecycleEvents = {
   type: "add" | "remove";

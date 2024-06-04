@@ -17,4 +17,4 @@ export const {
   wre,
 } = GetElementFunction(globalThis.window);
 
-export * from "./base/library";
+export * from "./library";

@@ -21,4 +21,4 @@ export const {
   wre,
 } = GetElementFunction(new JSDOM().window);
 
-export * from "./base/library";
+export * from "./library";
