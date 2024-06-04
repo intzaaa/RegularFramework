@@ -29,7 +29,7 @@ export const GetValue = <T>(input: Final<T>): T => {
     if (Array.isArray(currentValue) && currentValue[0] === STOP) {
       return currentValue[1];
     } else if (typeof currentValue === "function") {
-      currentValue = (currentValue as () => T)();
+      currentValue = (currentValue as () => Final<T>)();
     } else if (currentValue instanceof Signal) {
       currentValue = currentValue.value;
     } else {
