@@ -4,6 +4,7 @@
   "description": "RegularFramework is a new framework for building web pages that is simple, powerful, and elegant.",
   "scripts": {
     "test": "tsx ./src/test.ts",
+    "npm": "pnpm build && pnpm publish --registry=https://registry.npmjs.org",
     "build": "tsup",
     "typedoc": "typedoc"
   },
