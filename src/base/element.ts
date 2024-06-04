@@ -40,16 +40,19 @@ export const GetElementFunctionGroup = (window: Window | JSDOM["window"]) => {
 
       _.SetElementAttribute(element, attributes);
 
-      element.append(...new Array(children.length).fill(""));
-      children.forEach((child, index) => {
-        NewEffect(() => {
-          if (element.childNodes[index]) {
-            element.childNodes[index]?.replaceWith(GetValue(child));
-          } else {
-            element.append(GetValue(child));
-          }
-        });
-      });
+      // element.append(...new Array(children.length).fill(""));
+      // children.forEach((child, index) => {
+      //   NewEffect(() => {
+      //     if (element.childNodes[index]) {
+      //       element.childNodes[index]?.replaceWith(GetValue(child));
+      //     } else {
+      //       element.append(GetValue(child));
+      //     }
+      //   });
+      // });
+
+      _.AddElement(element, ...children);
+
       return element;
     },
 
@@ -81,7 +84,7 @@ export const GetElementFunctionGroup = (window: Window | JSDOM["window"]) => {
       const _parent = GetValue(parent);
       const length = _parent.childNodes.length;
 
-      _parent.append(...new Array(children.length).fill(""));
+      // _parent.append(...new Array(children.length).fill(""));
       children.forEach((child, index) => {
         const _index = length + index;
         NewEffect(() => {
