@@ -193,31 +193,49 @@ ae(
 
 ae(root, NewTimer(), hr);
 
+const start = nsi(0);
+const range = 5;
+setInterval(() => {
+  start.value = start.value + 1;
+  if (start.value >= gvb().length - range) {
+    start.value = 0;
+  }
+}, 2000);
+
 ae(
   root,
   ne("h2", {}, "List / Table"),
+  ne("p", {}, "Using Array as a child of NewElement or AddElement will automatically flatten it."),
   ne(
     "table",
-    {},
-    ...nit(() => [
-      ne("tr", {}, ...Object.keys(gvb()[0]).map((verb) => ne("th", {}, verb))),
-      ...gvb().map((row) =>
-        ne(
-          "tr",
-          {},
-          ...Object.values(row).map((value) =>
-            ne(
-              "td",
-              {
-                styles: {
-                  textAlign: "center",
+    {
+      styles: {
+        ...preStyle,
+        width: "100%",
+        height: "200px",
+        overflowY: "scroll",
+      },
+    },
+    ne("tr", {}, ...Object.keys(gvb()[0]).map((verb) => ne("th", {}, verb))),
+    () =>
+      gvb()
+        .slice(start.value, start.value + range)
+        .map((row) =>
+          ne(
+            "tr",
+            {},
+            ...Object.values(row).map((value) =>
+              ne(
+                "td",
+                {
+                  styles: {
+                    textAlign: "center",
+                  },
                 },
-              },
-              value
+                value
+              )
             )
           )
         )
-      ),
-    ])
   )
 );
