@@ -1,8 +1,8 @@
 import type * as CSS from "csstype";
 import type { JSDOM } from "jsdom";
 
-import { NewEffect } from "./library/signal";
-import { GetValue, Final } from "./library/value";
+import { NewEffect } from "../library/signal";
+import { GetValue, Final } from "../library/value";
 
 type LifecycleEvents = {
   type: "add" | "remove";
@@ -13,95 +13,78 @@ export type Events = Event | LifecycleEvents;
 
 export type Styles = CSS.Properties;
 
-export type ElementFunction = {
-  /**
-   * Creates a new HTML element with the specified tag name, attributes, and children.
-   *
-   * @param tag - The tag name of the element.
-   * @param attributes - Optional attributes to be applied to the element.
-   * @param children - Optional children elements to be appended to the element.
-   * @returns The created element.
-   */
-  NewElement: <T extends keyof HTMLElementTagNameMap>(
-    tag: Final<T>,
-    attributes?: Final<
-      Partial<{
-        [key: string]: Final<any>;
-        styles?: Final<Styles>;
-        events?: (events: Events) => void;
-      }>
-    >,
-    ...children: Final<any>[]
-  ) => Element;
+export type Attributes = Final<
+  Partial<{
+    [key: string]: Final<any>;
+    styles?: Final<Styles>;
+    events?: (events: Events) => void;
+  }>
+>;
 
-  /**
-   * Adds the specified children elements to the parent element.
-   *
-   * @param parent - The parent element to which the children elements will be added.
-   * @param children - The children elements to be added.
-   * @returns The parent element.
-   */
+export type ElementFunctionGroup = {
+  NewElement: <T extends keyof (HTMLElementTagNameMap & SVGElementTagNameMap)>(tag: Final<T>, attributes?: Attributes, ...children: Final<any>[]) => Element;
+
+  SetElementAttribute: (element: Final<Element>, attributes?: Attributes) => Element;
+
   AddElement: (parent: Final<Element>, ...children: Final<any>[]) => Element;
 
-  // RemoveElement: (parent: ValueFunctionSignal<Element>, ...children: ValueFunctionSignal<Element>[]) => void;
-
-  /**
-   * Updates the target element with the properties and attributes of the source element.
-   *
-   * @param target - The element to be updated.
-   * @param source - The element from which the properties and attributes will be copied.
-   * @returns The updated element.
-   */
   UpdateElement: (target: Final<Element>, source: Final<Element>) => Element;
 
-  /**
-   * Watches for changes in the root element and triggers a callback function when an event occurs.
-   *
-   * @param rootElement - The root element to watch for changes.
-   * @param callback - Optional callback function to be triggered when an event occurs.
-   */
-  WatchRootElement: (rootElement: Final<Element>, callback?: (event: Events) => any) => void;
+  WatchRootElement: (rootElement: Final<Element>, callback?: (event: Events) => any) => Element;
 };
 
-export const GetElementFunction = (window: Window | JSDOM["window"]) => {
-  const _: ElementFunction = {
+export const GetElementFunctionGroup = (window: Window | JSDOM["window"]) => {
+  const _: ElementFunctionGroup = {
     NewElement(tag, attributes, ...children) {
       const element = window.document.createElement(GetValue(tag));
+
+      _.SetElementAttribute(element, attributes);
+
+      // element.append(...new Array(children.length).fill(""));
+      // children.forEach((child, index) => {
+      //   NewEffect(() => {
+      //     if (element.childNodes[index]) {
+      //       element.childNodes[index]?.replaceWith(GetValue(child));
+      //     } else {
+      //       element.append(GetValue(child));
+      //     }
+      //   });
+      // });
+
+      _.AddElement(element, ...children);
+
+      return element;
+    },
+
+    SetElementAttribute(element, attributes) {
+      const _element = GetValue(element);
       const _attributes = GetValue(attributes);
 
       for (const key in _attributes) {
         NewEffect(() => {
-          if (!["styles", "events"].includes(key)) element.setAttribute(key, _attributes[GetValue(key)]);
+          if (!["styles", "events"].includes(key)) _element.setAttribute(key, _attributes[GetValue(key)]);
         });
       }
 
       NewEffect(() => {
         const _styles = GetValue(_attributes?.styles);
-        Object.assign(element.style, _styles);
+        if (_element instanceof HTMLElement) Object.assign(_element.style, _styles);
       });
 
-      element.addEventListener("receive", (event) => {
+      _element.addEventListener("receive", (event) => {
         _attributes?.events?.(
           // @ts-ignore
           event.detail.data
         );
       });
-
-      children.forEach((child, index) => {
-        NewEffect(() => {
-          if (element.childNodes[index]) {
-            element.childNodes[index]?.replaceWith(GetValue(child));
-          } else {
-            element.append(GetValue(child));
-          }
-        });
-      });
-      return element;
+      return _element;
     },
 
     AddElement(parent, ...children) {
       const _parent = GetValue(parent);
       const length = _parent.childNodes.length;
+
+      // _parent.append(...new Array(children.length).fill(""));
       children.forEach((child, index) => {
         const _index = length + index;
         NewEffect(() => {
@@ -174,11 +157,13 @@ export const GetElementFunction = (window: Window | JSDOM["window"]) => {
         childList: true,
         subtree: true,
       });
+      return _rootElement;
     },
   };
   return {
     ..._,
     ne: _.NewElement,
+    sea: _.SetElementAttribute,
     ae: _.AddElement,
     ue: _.UpdateElement,
     wre: _.WatchRootElement,

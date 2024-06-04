@@ -1,4 +1,4 @@
-import { GetElementFunction } from "./base/element";
+import { GetElementFunctionGroup } from "./base/element";
 
 export type * from "./base/element";
 
@@ -15,6 +15,6 @@ export const {
   //
   WatchRootElement,
   wre,
-} = GetElementFunction(globalThis.window);
+} = GetElementFunctionGroup(globalThis.window);
 
-export * from "./base/library";
+export * from "./library";

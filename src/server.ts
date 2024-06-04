@@ -4,7 +4,7 @@
 
 import { JSDOM } from "jsdom";
 
-import { GetElementFunction } from "./base/element";
+import { GetElementFunctionGroup } from "./base/element";
 
 export const {
   //
@@ -19,6 +19,6 @@ export const {
   //
   WatchRootElement,
   wre,
-} = GetElementFunction(new JSDOM().window);
+} = GetElementFunctionGroup(new JSDOM().window);
 
-export * from "./base/library";
+export * from "./library";
