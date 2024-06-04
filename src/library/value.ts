@@ -6,8 +6,8 @@ export type StaticFinal<T extends Exclude<any, Signal>> = Final<T>;
 
 const STOP = Symbol("STOP");
 
-export const StopGetValue = (input: any) => {
-  return [STOP, input];
+export const StopGetValue = <T>(input: T) => {
+  return [STOP, input as T];
 };
 
 export const GetValue = <T>(input: Final<T>): T => {
@@ -31,10 +31,10 @@ export const GetValue = <T>(input: Final<T>): T => {
 //   return typeof value[Symbol.iterator] === "function";
 // };
 
-export const GetFlatValue = (iterable: Array<any>) => {
+export const GetFlatValue = <T>(iterable: StaticFinal<Array<T>>) => {
   const result: any[] = [];
 
-  for (const value of iterable) {
+  for (const value of GetValue(iterable)) {
     const _v = GetValue(value);
     if (Array.isArray(_v)) {
       result.push(...GetFlatValue(_v));
