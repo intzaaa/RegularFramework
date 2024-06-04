@@ -8,6 +8,7 @@ export const StopGetValue = (input: any) => {
   return [STOP, input];
 };
 
+/*
 export const GetValue = <T>(input: Final<T>): T => {
   if (Array.isArray(input) && input[0] === STOP) {
     return input[1];
@@ -17,6 +18,23 @@ export const GetValue = <T>(input: Final<T>): T => {
     return GetValue(input.value);
   } else {
     return input;
+  }
+};
+*/
+
+export const GetValue = <T>(input: Final<T>): T => {
+  let currentValue: Final<T> = input;
+
+  while (true) {
+    if (Array.isArray(currentValue) && currentValue[0] === STOP) {
+      return currentValue[1];
+    } else if (typeof currentValue === "function") {
+      currentValue = (currentValue as () => Final<T>)();
+    } else if (currentValue instanceof Signal) {
+      currentValue = currentValue.value;
+    } else {
+      return currentValue;
+    }
   }
 };
 
