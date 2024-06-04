@@ -1,6 +1,6 @@
 # RegularFramework
 
-RegularFramework is a new framework for building web pages that is simple, powerful, and elegant.
+**R**egular**F**ramework is a new framework for building web pages that is simple, powerful, and elegant.
 
 ## Features
 
@@ -12,6 +12,14 @@ RegularFramework is a new framework for building web pages that is simple, power
 
 ```bash
 pnpm i regular-framework
+```
+
+```ts
+import { NewElement /*, ... */ } from 'regular-framework/client';
+
+// or directly from the CDN
+
+import { NewElement /*, ... */ } from 'https://esm.sh/regular-framework/client';
 ```
 
 ## Getting Started
@@ -32,7 +40,7 @@ WatchRootElement(
 );
 ```
 
-### 2. `AddElement`: Append the root element(, such as appending to `document.body`)
+### 3. `AddElement`: Append the root element(, such as appending to `document.body`)
 
 ```ts
 AddElement(document.body, root);
@@ -67,9 +75,11 @@ GetValue(() => signal) === 'Bye!' // true
 GetValue(114514) === 114514 // true, of course
 ```
 
-### 7. Visit the example site
+### 7. Visit the API and example sites to learn more
 
-<https://regular-framework.pages.dev>
+- <https://intzaaa.github.io/RegularFramework>
+
+- <https://regular-framework.pages.dev>
 
 The source code of the example site is available at `example/vite`.
 
