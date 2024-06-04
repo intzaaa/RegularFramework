@@ -2,7 +2,7 @@ import type * as CSS from "csstype";
 import type { JSDOM } from "jsdom";
 
 import { NewEffect } from "../library/signal";
-import { GetValue, Final } from "../library/value";
+import { GetValue, StaticFinal, Final, GetFlatValue } from "../library/value";
 
 type LifecycleEvents = {
   type: "add" | "remove";
@@ -13,7 +13,7 @@ export type Events = Event | LifecycleEvents;
 
 export type Styles = CSS.Properties;
 
-export type Attributes = Final<
+export type Attributes = StaticFinal<
   Partial<{
     [key: string]: Final<any>;
     styles?: Final<Styles>;
@@ -24,13 +24,13 @@ export type Attributes = Final<
 export type ElementFunctionGroup = {
   NewElement: <T extends keyof (HTMLElementTagNameMap & SVGElementTagNameMap)>(tag: Final<T>, attributes?: Attributes, ...children: Final<any>[]) => Element;
 
-  SetElementAttribute: (element: Final<Element>, attributes?: Attributes) => Element;
+  SetElementAttribute: (element: StaticFinal<Element>, attributes?: Attributes) => Element;
 
   AddElement: (parent: Final<Element>, ...children: Final<any>[]) => Element;
 
   UpdateElement: (target: Final<Element>, source: Final<Element>) => Element;
 
-  WatchRootElement: (rootElement: Final<Element>, callback?: (event: Events) => any) => Element;
+  WatchRootElement: (rootElement: StaticFinal<Element>, callback?: (event: Events) => any) => Element;
 };
 
 export const GetElementFunctionGroup = (window: Window | JSDOM["window"]) => {
@@ -59,43 +59,63 @@ export const GetElementFunctionGroup = (window: Window | JSDOM["window"]) => {
     SetElementAttribute(element, attributes) {
       const _element = GetValue(element);
 
-      NewEffect(() => {
-        const _attributes = GetValue(attributes);
+      const _attributes = GetValue(attributes);
 
-        for (const key in _attributes) {
-          NewEffect(() => {
-            if (!["styles", "events"].includes(key)) _element.setAttribute(key, _attributes[GetValue(key)]);
-          });
-        }
-
+      for (const key in _attributes) {
         NewEffect(() => {
-          const _styles = GetValue(_attributes?.styles);
-          if (_element instanceof (HTMLElement || SVGElement)) Object.assign(_element.style, _styles);
+          if (!["styles", "events"].includes(key)) _element.setAttribute(key, _attributes[GetValue(key)]);
         });
+      }
 
-        _element.addEventListener("receive", (event) => {
-          _attributes?.events?.(
-            // @ts-ignore
-            event.detail.data
-          );
-        });
+      NewEffect(() => {
+        const _styles = GetValue(_attributes?.styles);
+        if (_element instanceof (HTMLElement || SVGElement)) Object.assign(_element.style, _styles);
       });
+
+      _element.addEventListener("receive", (event) => {
+        _attributes?.events?.(
+          // @ts-ignore
+          event.detail.data
+        );
+      });
+
       return _element;
     },
 
     AddElement(parent, ...children) {
       const _parent = GetValue(parent);
-      const length = _parent.childNodes.length;
 
-      // _parent.append(...new Array(children.length).fill(""));
-      children.forEach((child, index) => {
-        const _index = length + index;
-        NewEffect(() => {
-          if (_parent.childNodes[_index]) {
-            _parent.childNodes[_index]?.replaceWith(GetValue(child));
-          } else {
-            _parent.append(GetValue(child));
-          }
+      const createdTime = performance.now().toString();
+      const start = window.document.createComment("start-" + createdTime);
+      const end = window.document.createComment("end-" + createdTime);
+      _parent.append(start, end);
+
+      NewEffect(() => {
+        const flatChildren = GetFlatValue(children);
+
+        flatChildren.forEach((child, index, arr) => {
+          NewEffect(() => {
+            const GetStartIndex = () => Array.from(_parent.childNodes).findIndex((e) => e.isEqualNode(start));
+            const GetEndIndex = () => Array.from(_parent.childNodes).findIndex((e) => e.isEqualNode(end));
+            const indexInParent = () => GetStartIndex() + index + 1;
+
+            const _child = GetValue(child);
+
+            if (indexInParent() < GetEndIndex()) {
+              // console.log("Replacing", _parent.childNodes[indexInParent()], "with", _child, "in", _parent);
+              _parent.childNodes[indexInParent()]!.replaceWith(_child);
+            } else {
+              // console.log("Appending", _child, "after", _parent.childNodes[indexInParent() - 1], "in", _parent);
+              _parent.childNodes[indexInParent() - 1]!.after(_child);
+            }
+
+            if (index === arr.length - 1) {
+              for (const removedChild of Array.from(_parent.childNodes).slice(indexInParent() + 1, GetEndIndex())) {
+                // console.log("Removing", removedChild);
+                removedChild.remove();
+              }
+            }
+          });
         });
       });
       return _parent;
