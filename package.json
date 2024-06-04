@@ -1,6 +1,6 @@
 {
   "name": "regular-framework",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "RegularFramework is a new framework for building web pages that is simple, powerful, and elegant.",
   "scripts": {
     "test": "tsx ./src/test.ts",
