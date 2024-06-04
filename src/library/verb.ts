@@ -609,4 +609,4 @@ export { GetVerb as gvb };
 
 export type Verb = (typeof data)[number]["Verb"];
 
-export type ShortVerb = (typeof data)[number]["AliasPrefix"];
+export type AliasPrefix = (typeof data)[number]["AliasPrefix"];

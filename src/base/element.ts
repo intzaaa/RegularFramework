@@ -13,7 +13,7 @@ export type Events = Event | LifecycleEvents;
 
 export type Styles = CSS.Properties;
 
-export type Attributes = StaticFinal<
+export type Attributes = Final<
   Partial<{
     [key: string]: Final<any>;
     styles?: Final<Styles>;
@@ -22,13 +22,17 @@ export type Attributes = StaticFinal<
 >;
 
 export type ElementFunctionGroup = {
-  NewElement: <T extends keyof (HTMLElementTagNameMap & SVGElementTagNameMap)>(tag: Final<T>, attributes?: Attributes, ...children: Final<any>[]) => Element;
+  NewElement: <T extends keyof (HTMLElementTagNameMap & SVGElementTagNameMap)>(
+    tag: StaticFinal<T>,
+    attributes?: Attributes,
+    ...children: Final<any>[]
+  ) => Element;
 
   SetElementAttribute: (element: StaticFinal<Element>, attributes?: Attributes) => Element;
 
-  AddElement: (parent: Final<Element>, ...children: Final<any>[]) => Element;
+  AddElement: (parent: StaticFinal<Element>, ...children: Final<any>[]) => Element;
 
-  UpdateElement: (target: Final<Element>, source: Final<Element>) => Element;
+  UpdateElement: (target: StaticFinal<Element>, source: StaticFinal<Element>) => Element;
 
   WatchRootElement: (rootElement: StaticFinal<Element>, callback?: (event: Events) => any) => Element;
 };
@@ -59,24 +63,26 @@ export const GetElementFunctionGroup = (window: Window | JSDOM["window"]) => {
     SetElementAttribute(element, attributes) {
       const _element = GetValue(element);
 
-      const _attributes = GetValue(attributes);
-
-      for (const key in _attributes) {
-        NewEffect(() => {
-          if (!["styles", "events"].includes(key)) _element.setAttribute(key, _attributes[GetValue(key)]);
-        });
-      }
-
       NewEffect(() => {
-        const _styles = GetValue(_attributes?.styles);
-        if (_element instanceof (HTMLElement || SVGElement)) Object.assign(_element.style, _styles);
-      });
+        const _attributes = GetValue(attributes);
 
-      _element.addEventListener("receive", (event) => {
-        _attributes?.events?.(
-          // @ts-ignore
-          event.detail.data
-        );
+        for (const key in _attributes) {
+          NewEffect(() => {
+            if (!["styles", "events"].includes(key)) _element.setAttribute(key, _attributes[GetValue(key)]);
+          });
+        }
+
+        NewEffect(() => {
+          const _styles = GetValue(_attributes?.styles);
+          if (_element instanceof (HTMLElement || SVGElement)) Object.assign(_element.style, _styles);
+        });
+
+        _element.addEventListener("receive", (event) => {
+          _attributes?.events?.(
+            // @ts-ignore
+            event.detail.data
+          );
+        });
       });
 
       return _element;
