@@ -21,8 +21,8 @@ export type Attributes = Final<
   }>
 >;
 
-export type ElementFunction = {
-  NewElement: <T extends keyof (HTMLElementTagNameMap | SVGElementTagNameMap)>(tag: Final<T>, attributes?: Attributes, ...children: Final<any>[]) => Element;
+export type ElementFunctionGroup = {
+  NewElement: <T extends keyof (HTMLElementTagNameMap & SVGElementTagNameMap)>(tag: Final<T>, attributes?: Attributes, ...children: Final<any>[]) => Element;
 
   SetElementAttribute: (element: Final<Element>, attributes?: Attributes) => Element;
 
@@ -33,13 +33,14 @@ export type ElementFunction = {
   WatchRootElement: (rootElement: Final<Element>, callback?: (event: Events) => any) => Element;
 };
 
-export const GetElementFunction = (window: Window | JSDOM["window"]) => {
-  const _: ElementFunction = {
+export const GetElementFunctionGroup = (window: Window | JSDOM["window"]) => {
+  const _: ElementFunctionGroup = {
     NewElement(tag, attributes, ...children) {
       const element = window.document.createElement(GetValue(tag));
 
       _.SetElementAttribute(element, attributes);
 
+      element.append(...new Array(children.length).fill(""));
       children.forEach((child, index) => {
         NewEffect(() => {
           if (element.childNodes[index]) {
@@ -79,6 +80,8 @@ export const GetElementFunction = (window: Window | JSDOM["window"]) => {
     AddElement(parent, ...children) {
       const _parent = GetValue(parent);
       const length = _parent.childNodes.length;
+
+      _parent.append(...new Array(children.length).fill(""));
       children.forEach((child, index) => {
         const _index = length + index;
         NewEffect(() => {
