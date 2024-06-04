@@ -7,6 +7,9 @@ export const {
   NewElement,
   ne,
   //
+  SetElementAttribute,
+  sea,
+  //
   AddElement,
   ae,
   //

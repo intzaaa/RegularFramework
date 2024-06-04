@@ -58,24 +58,27 @@ export const GetElementFunctionGroup = (window: Window | JSDOM["window"]) => {
 
     SetElementAttribute(element, attributes) {
       const _element = GetValue(element);
-      const _attributes = GetValue(attributes);
-
-      for (const key in _attributes) {
-        NewEffect(() => {
-          if (!["styles", "events"].includes(key)) _element.setAttribute(key, _attributes[GetValue(key)]);
-        });
-      }
 
       NewEffect(() => {
-        const _styles = GetValue(_attributes?.styles);
-        if (_element instanceof HTMLElement) Object.assign(_element.style, _styles);
-      });
+        const _attributes = GetValue(attributes);
 
-      _element.addEventListener("receive", (event) => {
-        _attributes?.events?.(
-          // @ts-ignore
-          event.detail.data
-        );
+        for (const key in _attributes) {
+          NewEffect(() => {
+            if (!["styles", "events"].includes(key)) _element.setAttribute(key, _attributes[GetValue(key)]);
+          });
+        }
+
+        NewEffect(() => {
+          const _styles = GetValue(_attributes?.styles);
+          if (_element instanceof (HTMLElement || SVGElement)) Object.assign(_element.style, _styles);
+        });
+
+        _element.addEventListener("receive", (event) => {
+          _attributes?.events?.(
+            // @ts-ignore
+            event.detail.data
+          );
+        });
       });
       return _element;
     },

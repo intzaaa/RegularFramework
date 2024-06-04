@@ -28,7 +28,7 @@ jobs:
         run: pnpm run typedoc
 
       - name: Copy Public Files
-        run: cp -r ./public ./docs
+        run: cp -R ./public/* ./docs/
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3

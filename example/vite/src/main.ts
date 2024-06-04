@@ -159,14 +159,12 @@ ae(
   root,
   ne(
     "h2",
-    {
-      styles() {
-        return {
-          filter: `blur(${blur.value}px)`,
-          transition: "filter 2s",
-        };
+    () => ({
+      styles: {
+        filter: `blur(${blur.value}px)`,
+        transition: "filter 2s",
       },
-    },
+    }),
     "UnoCSS"
   ),
   ne(
