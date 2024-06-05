@@ -91,33 +91,38 @@ export const GetElementFunctionGroup = (window: Window | JSDOM["window"]) => {
     AddElement(parent, ...children) {
       const _parent = GetValue(parent);
 
-      const createdTime = performance.now().toString();
-      const start = window.document.createComment("start-" + createdTime);
-      const end = window.document.createComment("end-" + createdTime);
+      const createdTime = performance.now().toString().replace(".", "");
+      const start = window.document.createComment("s-" + createdTime);
+      const end = window.document.createComment("e-" + createdTime);
       _parent.append(start, end);
 
       NewEffect(() => {
         const flatChildren = GetFlatValue(children);
 
-        flatChildren.forEach((child, index, arr) => {
-          NewEffect(() => {
-            const GetStartIndex = () => Array.from(_parent.childNodes).findIndex((e) => e.isEqualNode(start));
-            const GetEndIndex = () => Array.from(_parent.childNodes).findIndex((e) => e.isEqualNode(end));
-            const indexInParent = () => GetStartIndex() + index + 1;
+        flatChildren.forEach((child, index) => {
+          const GetStartIndex = () => Array.from(_parent.childNodes).findIndex((e) => e.isEqualNode(start));
+          const GetEndIndex = () => Array.from(_parent.childNodes).findIndex((e) => e.isEqualNode(end));
+          const indexInParent = () => GetStartIndex() + index + 1;
 
+          NewEffect(() => {
             const _child = GetValue(child);
 
             if (indexInParent() < GetEndIndex()) {
+              const targetNode = _parent.childNodes[indexInParent()]!;
+
               // console.log("Replacing", _parent.childNodes[indexInParent()], "with", _child, "in", _parent);
-              _parent.childNodes[indexInParent()]!.replaceWith(_child);
+
+              if (!targetNode.isEqualNode(_child)) targetNode.replaceWith(_child);
             } else {
               // console.log("Appending", _child, "after", _parent.childNodes[indexInParent() - 1], "in", _parent);
+
               _parent.childNodes[indexInParent() - 1]!.after(_child);
             }
 
-            if (index === arr.length - 1) {
+            if (index === flatChildren.length - 1) {
               for (const removedChild of Array.from(_parent.childNodes).slice(indexInParent() + 1, GetEndIndex())) {
                 // console.log("Removing", removedChild);
+
                 removedChild.remove();
               }
             }
