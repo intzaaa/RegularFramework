@@ -237,5 +237,17 @@ ae(
             )
           )
         )
+  ),
+  hr
+);
+
+ae(
+  root,
+  ne(
+    "a",
+    {
+      href: "/component-party",
+    },
+    "Go to component-party example"
   )
 );

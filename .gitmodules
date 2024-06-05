@@ -1,0 +1,3 @@
+[submodule "example/vite/src/component-party.dev"]
+	path = example/vite/src/component-party.dev
+	url = https://github.com/intzaaa/component-party.dev/

@@ -13,7 +13,9 @@
     "vite": "^5.2.0"
   },
   "dependencies": {
+    "@types/path-browserify": "^1.0.2",
     "@unocss/runtime": "^0.60.3",
+    "path-browserify": "^1.0.1",
     "ramda": "^0.30.0",
     "regular-framework": "link:../..",
     "unocss": "^0.60.4"
