@@ -112,7 +112,7 @@ export const GetElementFunctionGroup = (window: Window | JSDOM["window"]) => {
 
               // console.log("Replacing", _parent.childNodes[indexInParent()], "with", _child, "in", _parent);
 
-              if (!targetNode.isEqualNode(_child)) targetNode.replaceWith(_child);
+              targetNode.replaceWith(_child);
             } else {
               // console.log("Appending", _child, "after", _parent.childNodes[indexInParent() - 1], "in", _parent);
 
