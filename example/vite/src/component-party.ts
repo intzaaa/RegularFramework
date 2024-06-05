@@ -1,6 +1,6 @@
 import { AddElement, NewElement, WatchRootElement } from "regular-framework/dev/client";
 
-const modules = import.meta.glob("./**/regularFramework/*.ts", { eager: true });
+const modules = import.meta.glob("./**/regularFramework/*.ts");
 
 console.log(modules);
 
@@ -10,13 +10,13 @@ WatchRootElement(root);
 
 AddElement(document.body, root);
 
-Object.entries(modules).forEach(([path, module]) => {
-  console.log(path, module);
-  const component = (module as any)?.default;
+for (const [path, module] of Object.entries(modules)) {
   try {
-    if (component && !path.endsWith("Profile.ts") && !path.endsWith("Button.ts") && !path.includes("render-app"))
+    if (!path.endsWith("Profile.ts") && !path.endsWith("Button.ts") && !path.includes("render-app")) {
+      const component = ((await module()) as any)?.default;
       AddElement(root, NewElement("pre", {}, path.replace("./component-party.dev/content", "")), component, () => NewElement("hr"));
+    }
   } catch (error) {
-    console.error(error);
+    console.log(path, module, error);
   }
-});
+}
