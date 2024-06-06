@@ -35,15 +35,15 @@ export const GetFlatValue = <T>(iterable: StaticFinal<Array<T>>) => {
   const result: any[] = [];
 
   for (const value of GetValue(iterable)) {
-    const _v = GetValue(value);
-    if (Array.isArray(_v)) {
-      result.push(...GetFlatValue(_v));
+    const _value = GetValue(value);
+    if (Array.isArray(_value)) {
+      result.push(...GetFlatValue(_value));
     } else {
-      result.push(_v);
+      result.push(_value);
     }
   }
 
   return result;
 };
 
-export { GetValue as gvl, StopGetValue as sgv };
+export { GetValue as gvl, GetFlatValue as gfv, StopGetValue as sgv };

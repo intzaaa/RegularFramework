@@ -96,6 +96,7 @@ export const GetElementFunctionGroup = (window: Window | JSDOM["window"]) => {
       const end = window.document.createComment("e-" + createdTime);
       _parent.append(start, end);
 
+      let lastFlatChildren: any[] = [];
       NewEffect(() => {
         const flatChildren = GetFlatValue(children);
 
@@ -107,16 +108,19 @@ export const GetElementFunctionGroup = (window: Window | JSDOM["window"]) => {
           NewEffect(() => {
             const _child = GetValue(child);
 
-            if (indexInParent() < GetEndIndex()) {
-              const targetNode = _parent.childNodes[indexInParent()]!;
+            const targetNode = _parent.childNodes[indexInParent()]!;
 
-              // console.log("Replacing", _parent.childNodes[indexInParent()], "with", _child, "in", _parent);
-
-              targetNode.replaceWith(_child);
+            if (lastFlatChildren[index] === _child) {
             } else {
-              // console.log("Appending", _child, "after", _parent.childNodes[indexInParent() - 1], "in", _parent);
+              if (indexInParent() < GetEndIndex()) {
+                // console.log("Replacing", _parent.childNodes[indexInParent()], "with", _child, "in", _parent);
 
-              _parent.childNodes[indexInParent() - 1]!.after(_child);
+                targetNode.replaceWith(_child);
+              } else {
+                // console.log("Appending", _child, "after", _parent.childNodes[indexInParent() - 1], "in", _parent);
+
+                _parent.childNodes[indexInParent() - 1]!.after(_child);
+              }
             }
 
             if (index === flatChildren.length - 1) {
@@ -126,8 +130,13 @@ export const GetElementFunctionGroup = (window: Window | JSDOM["window"]) => {
                 removedChild.remove();
               }
             }
+            return () => {};
           });
         });
+
+        return () => {
+          lastFlatChildren = flatChildren;
+        };
       });
       return _parent;
     },
