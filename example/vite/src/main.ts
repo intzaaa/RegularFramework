@@ -1,7 +1,7 @@
 import { presetMini } from "unocss/preset-mini";
 import initUnocssRuntime from "@unocss/runtime";
 
-import { ne, wre, ae, nsi, gvb, Styles, nit } from "regular-framework/dev/client";
+import { ne, wre, ae, nsi, gvb, Styles, nr } from "regular-framework/dev/client";
 import { NewTimer } from "./components/timer";
 
 const root = ne("div", {
@@ -75,33 +75,23 @@ const preStyle: Styles = {
 ae(
   root,
   ne("h2", {}, "Async / Fallback"),
-  // Use NewIterator to place logic and layout in the same place instead of putting NewSignal at the top level
-  ...nit(() => {
-    const async = nsi("Waiting...");
+  () => {
+    const data = nr<string>("https://www.cloudflare.com/cdn-cgi/trace", {}, async (res) => await res.text());
     return [
-      ne("p", {}, "Value: ", ne("pre", { styles: { ...preStyle, width: "400px", height: "200px" } }, async)),
+      ne("p", {}, "Value: ", ne("pre", { styles: { ...preStyle, width: "400px", height: "200px" } }, data)),
       ne(
         "button",
         {
           events: (event) => {
             if (event.type === "click") {
-              async.value = "Loading...";
-              const load = async () => {
-                const res = await fetch("https://www.cloudflare.com/cdn-cgi/trace");
-                if (res.ok) {
-                  async.value = await res.text();
-                } else {
-                  async.value = "Error!";
-                }
-              };
-              load();
+              data.load();
             }
           },
         },
-        () => (async.value.split("\n").length < 2 ? "Click to load" : "Click to reload")
+        () => (data.state.value === "idle" ? "Click to load" : "Click to reload")
       ),
     ];
-  }),
+  },
   hr
 );
 
@@ -238,6 +228,34 @@ ae(
           )
         )
   ),
+  hr
+);
+
+ae(
+  root,
+  () => {
+    const data = nr<{
+      results: Array<{
+        picture: { thumbnail: string };
+        name: { first: string; last: string };
+      }>;
+    }>(new URL("https://randomuser.me/api/?results=3"), {}, async (res) => await res.json());
+
+    setInterval(data.load, 10000);
+
+    return ne("ul", {}, ne("p", {}, "State: ", data.state), () => {
+      switch (data.state.value) {
+        case "loading":
+          return ne("p", {}, "Fetching users...");
+        case "ready":
+          return data.value?.results.map((user: any) =>
+            ne("li", {}, ne("img", { src: user.picture.thumbnail }), ne("p", {}, user.name.first, " ", user.name.last))
+          );
+        case "errored":
+          return ne("p", {}, "An error occurred while fetching users");
+      }
+    });
+  },
   hr
 );
 
