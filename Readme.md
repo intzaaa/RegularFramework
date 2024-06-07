@@ -1,6 +1,10 @@
 # RegularFramework
 
-> Note: This project is still in the early stages of development. APIs may change in the future. Please use with caution.
+> Note 1: This project is still in the early stages of development. APIs may change in the future. Please use with caution.
+>
+> Note 2: This project is inspired by `Mithril.js`, but it is not a Mithril.js clone.
+>
+> Note 3: This project was not inspired by `uhtml` at the beginning of its development, and I didn't know about it until later.
 
 **R**egular**F**ramework is a new framework for building web pages that is simple, powerful, and elegant.
 

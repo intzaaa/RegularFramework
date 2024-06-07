@@ -1,6 +1,6 @@
 {
   "name": "regular-framework",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "description": "RegularFramework is a new framework for building web pages that is simple, powerful, and elegant.",
   "scripts": {
     "test": "tsx ./src/test.ts",
@@ -12,7 +12,13 @@
   "keywords": [
     "regular",
     "framework",
-    "ui"
+    "web",
+    "javascript",
+    "typescript",
+    "ui",
+    "simple",
+    "powerful",
+    "elegant"
   ],
   "repository": {
     "url": "https://github.com/intzaaa/RegularFramework"
@@ -42,17 +48,26 @@
   "exports": {
     ".": {
       "import": "./dist/index.js",
-      "types": "./dist/index.d.ts",
+      "types": {
+        "import": "./dist/index.d.ts",
+        "require": "./dist/index.d.cts"
+      },
       "require": "./dist/index.cjs"
     },
     "./client": {
       "import": "./dist/client.js",
-      "types": "./dist/client.d.ts",
+      "types": {
+        "import": "./dist/client.d.ts",
+        "require": "./dist/client.d.cts"
+      },
       "require": "./dist/client.cjs"
     },
     "./server": {
       "import": "./dist/server.js",
-      "types": "./dist/server.d.ts",
+      "types": {
+        "import": "./dist/server.d.ts",
+        "require": "./dist/server.d.cts"
+      },
       "require": "./dist/server.cjs"
     },
     "./dev": {

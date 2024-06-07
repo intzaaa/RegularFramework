@@ -4,6 +4,9 @@ import type { JSDOM } from "jsdom";
 import { NewEffect } from "../library/signal";
 import { GetValue, StaticFinal, Final, GetFlatValue } from "../library/value";
 
+import diff from "../library/diff";
+import { isNotNil } from "ramda";
+
 type LifecycleEvents = {
   type: "add" | "remove";
   target: Node;
@@ -41,22 +44,8 @@ export const GetElementFunctionGroup = (window: Window | JSDOM["window"]) => {
   const _: ElementFunctionGroup = {
     NewElement(tag, attributes, ...children) {
       const element = window.document.createElement(GetValue(tag));
-
       _.SetElementAttribute(element, attributes);
-
-      // element.append(...new Array(children.length).fill(""));
-      // children.forEach((child, index) => {
-      //   NewEffect(() => {
-      //     if (element.childNodes[index]) {
-      //       element.childNodes[index]?.replaceWith(GetValue(child));
-      //     } else {
-      //       element.append(GetValue(child));
-      //     }
-      //   });
-      // });
-
       _.AddElement(element, ...children);
-
       return element;
     },
 
@@ -91,51 +80,69 @@ export const GetElementFunctionGroup = (window: Window | JSDOM["window"]) => {
     AddElement(parent, ...children) {
       const _parent = GetValue(parent);
 
-      const createdTime = performance.now().toString().replace(".", "");
-      const start = window.document.createComment("s-" + createdTime);
-      const end = window.document.createComment("e-" + createdTime);
+      const createdTime = performance.now() + performance.now();
+      const start = window.document.createComment("s-" + createdTime) as Node;
+      const end = window.document.createComment("e-" + createdTime) as Node;
       _parent.append(start, end);
 
-      let lastFlatChildren: any[] = [];
+      const GetStartIndex = () => Array.from(_parent.childNodes).findIndex((e) => e === start);
+      const GetEndIndex = () => Array.from(_parent.childNodes).findIndex((e) => e === end);
+
+      const cache: {
+        node: Node[];
+        text: { [key: string]: Node };
+      } = {
+        node: [],
+        text: {},
+      };
+
       NewEffect(() => {
-        const flatChildren = GetFlatValue(children);
-
-        flatChildren.forEach((child, index) => {
-          const GetStartIndex = () => Array.from(_parent.childNodes).findIndex((e) => e.isEqualNode(start));
-          const GetEndIndex = () => Array.from(_parent.childNodes).findIndex((e) => e.isEqualNode(end));
-          const indexInParent = () => GetStartIndex() + index + 1;
-
-          NewEffect(() => {
-            const _child = GetValue(child);
-
-            const targetNode = _parent.childNodes[indexInParent()]!;
-
-            if (lastFlatChildren[index] === _child) {
-            } else {
-              if (indexInParent() < GetEndIndex()) {
-                // console.log("Replacing", _parent.childNodes[indexInParent()], "with", _child, "in", _parent);
-
-                targetNode.replaceWith(_child);
+        const flatChildren = [
+          start,
+          ...(GetFlatValue(children)
+            .filter((v) => isNotNil(v))
+            .map((v, i, a) => {
+              if (v instanceof Node) {
+                const _node = cache.node.filter((node) => node.isEqualNode(v)).filter((v) => !a.slice(0, i).includes(v))[0];
+                if (_node) {
+                  // console.info("Use node cache", _node);
+                  return _node;
+                } else {
+                  // console.info("Create node cache", v);
+                  cache.node.push(v);
+                  return v;
+                }
               } else {
-                // console.log("Appending", _child, "after", _parent.childNodes[indexInParent() - 1], "in", _parent);
-
-                _parent.childNodes[indexInParent() - 1]!.after(_child);
+                const string = String(v);
+                const _node = cache.text[string];
+                if (_node) {
+                  // console.info("Use text cache", _node);
+                  return _node;
+                } else {
+                  const node = window.document.createTextNode(v);
+                  // console.info("Create text cache", node);
+                  cache.text[string] = node;
+                  return node;
+                }
               }
-            }
+            }) as Node[]),
+          end,
+        ];
 
-            if (index === flatChildren.length - 1) {
-              for (const removedChild of Array.from(_parent.childNodes).slice(indexInParent() + 1, GetEndIndex())) {
-                // console.log("Removing", removedChild);
-
-                removedChild.remove();
-              }
-            }
-            return () => {};
-          });
+        diff(_parent, Array.from(_parent.childNodes).slice(GetStartIndex(), GetEndIndex() + 1), flatChildren, (node /*, action*/) => {
+          // if (action === 1) console.info(action, node);
+          return node;
         });
 
         return () => {
-          lastFlatChildren = flatChildren;
+          cache.node = cache.node.filter((node) => flatChildren.includes(node));
+
+          Object.entries(cache.text).forEach(([key, value]) => {
+            if (!flatChildren.includes(value)) {
+              // console.info("Delete text cache", value);
+              delete cache.text[key];
+            }
+          });
         };
       });
       return _parent;

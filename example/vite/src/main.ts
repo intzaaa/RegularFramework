@@ -33,7 +33,7 @@ ae(root, ne("h2", {}, "Hello, World!"), hr);
 ae(
   root,
   ne("h2", {}, "Counter"),
-  ne("p", {}, `Count: `, ne("b", {}, count), () => (count.value % 2 === 0 ? " (even)" : " (odd)")),
+  () => ne("p", {}, "Count: ", ne("b", {}, count), () => (count.value % 2 === 0 ? " (even)" : " (odd)")),
   ne(
     "button",
     {
@@ -190,7 +190,7 @@ setInterval(() => {
   if (start.value >= gvb().length - range) {
     start.value = 0;
   }
-}, 2000);
+}, 30000);
 
 ae(
   root,
@@ -233,6 +233,7 @@ ae(
 
 ae(
   root,
+  ne("h2", {}, "Resource"),
   () => {
     const data = nr<{
       results: Array<{
@@ -241,20 +242,25 @@ ae(
       }>;
     }>(new URL("https://randomuser.me/api/?results=3"), {}, async (res) => await res.json());
 
-    setInterval(data.load, 10000);
+    setInterval(data.load, 15000);
 
-    return ne("ul", {}, ne("p", {}, "State: ", data.state), () => {
-      switch (data.state.value) {
-        case "loading":
-          return ne("p", {}, "Fetching users...");
-        case "ready":
-          return data.value?.results.map((user: any) =>
-            ne("li", {}, ne("img", { src: user.picture.thumbnail }), ne("p", {}, user.name.first, " ", user.name.last))
-          );
-        case "errored":
-          return ne("p", {}, "An error occurred while fetching users");
-      }
-    });
+    return ne(
+      "ul",
+      {},
+      () => {
+        switch (data.state.value) {
+          case "loading":
+            return ne("p", {}, "Fetching users...");
+          case "ready":
+            return data.value!.results.map((user: any) =>
+              ne("li", {}, ne("img", { src: user.picture.thumbnail }), ne("p", {}, user.name.first, " ", user.name.last))
+            );
+          case "errored":
+            return ne("p", {}, "An error occurred while fetching users");
+        }
+      },
+      ne("p", {}, `State: `, data.state, "!")
+    );
   },
   hr
 );
