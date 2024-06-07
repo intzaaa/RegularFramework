@@ -1,6 +1,6 @@
 {
   "name": "regular-framework",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "RegularFramework is a new framework for building web pages that is simple, powerful, and elegant.",
   "scripts": {
     "test": "tsx ./src/test.ts",
@@ -12,7 +12,13 @@
   "keywords": [
     "regular",
     "framework",
-    "ui"
+    "web",
+    "javascript",
+    "typescript",
+    "ui",
+    "simple",
+    "powerful",
+    "elegant"
   ],
   "repository": {
     "url": "https://github.com/intzaaa/RegularFramework"
