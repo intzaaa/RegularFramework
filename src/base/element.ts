@@ -88,24 +88,40 @@ export const GetElementFunctionGroup = (window: Window | JSDOM["window"]) => {
       const GetStartIndex = () => Array.from(_parent.childNodes).findIndex((e) => e === start);
       const GetEndIndex = () => Array.from(_parent.childNodes).findIndex((e) => e === end);
 
-      const cache: { [key: string]: Node } = {};
+      const cache: {
+        node: Node[];
+        text: { [key: string]: Node };
+      } = {
+        node: [],
+        text: {},
+      };
+
       NewEffect(() => {
-        const newKeys: string[] = [];
         const flatChildren = [
           start,
           ...(GetFlatValue(children)
             .filter((v) => isNotNil(v))
-            .map((v) => {
+            .map((v, i, a) => {
               if (v instanceof Node) {
-                return v;
+                const _node = cache.node.filter((node) => node.isEqualNode(v)).filter((v) => !a.slice(0, i).includes(v))[0];
+                if (_node) {
+                  // console.info("Use node cache", _node);
+                  return _node;
+                } else {
+                  // console.info("Create node cache", v);
+                  cache.node.push(v);
+                  return v;
+                }
               } else {
                 const string = String(v);
-                if (cache[string]) {
-                  return cache[string];
+                const _node = cache.text[string];
+                if (_node) {
+                  // console.info("Use text cache", _node);
+                  return _node;
                 } else {
                   const node = window.document.createTextNode(v);
-                  newKeys.push(string);
-                  cache[string] = node;
+                  // console.info("Create text cache", node);
+                  cache.text[string] = node;
                   return node;
                 }
               }
@@ -113,16 +129,21 @@ export const GetElementFunctionGroup = (window: Window | JSDOM["window"]) => {
           end,
         ];
 
-        Object.keys(cache).forEach((key) => {
-          if (!newKeys.includes(key)) {
-            delete cache[key];
-          }
-        });
-
         diff(_parent, Array.from(_parent.childNodes).slice(GetStartIndex(), GetEndIndex() + 1), flatChildren, (node /*, action*/) => {
           // if (action === 1) console.info(action, node);
           return node;
         });
+
+        return () => {
+          cache.node = cache.node.filter((node) => flatChildren.includes(node));
+
+          Object.entries(cache.text).forEach(([key, value]) => {
+            if (!flatChildren.includes(value)) {
+              // console.info("Delete text cache", value);
+              delete cache.text[key];
+            }
+          });
+        };
       });
       return _parent;
     },

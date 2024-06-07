@@ -26,9 +26,6 @@ importers:
       ramda:
         specifier: ^0.30.0
         version: 0.30.0
-      udomdiff:
-        specifier: ^1.1.0
-        version: 1.1.0
     devDependencies:
       prettier:
         specifier: ^3.2.5
@@ -1037,9 +1034,6 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
-  udomdiff@1.1.0:
-    resolution: {integrity: sha512-aqjTs5x/wsShZBkVagdafJkP8S3UMGhkHKszsu1cszjjZ7iOp86+Qb3QOFYh01oWjPMy5ZTuxD6hw5uTKxd+VA==}
-
   undici-types@5.26.5:
     resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
 
@@ -1957,8 +1951,6 @@ snapshots:
       ts-toolbelt: 9.6.0
 
   typescript@5.4.5: {}
-
-  udomdiff@1.1.0: {}
 
   undici-types@5.26.5: {}
 

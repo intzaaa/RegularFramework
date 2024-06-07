@@ -1,7 +1,7 @@
 import { presetMini } from "unocss/preset-mini";
 import initUnocssRuntime from "@unocss/runtime";
 
-import { ne, wre, ae, nsi, gvb, Styles, nr, nef } from "regular-framework/dev/client";
+import { ne, wre, ae, nsi, gvb, Styles, nr } from "regular-framework/dev/client";
 import { NewTimer } from "./components/timer";
 
 const root = ne("div", {
@@ -190,9 +190,8 @@ setInterval(() => {
   if (start.value >= gvb().length - range) {
     start.value = 0;
   }
-}, 2000);
+}, 30000);
 
-/*
 ae(
   root,
   ne("h2", {}, "List / Table"),
@@ -231,7 +230,6 @@ ae(
   ),
   hr
 );
-*/
 
 ae(
   root,
@@ -244,11 +242,8 @@ ae(
       }>;
     }>(new URL("https://randomuser.me/api/?results=3"), {}, async (res) => await res.json());
 
-    setInterval(data.load, 5000);
+    setInterval(data.load, 15000);
 
-    nef(() => {
-      console.log(data.state);
-    });
     return ne(
       "ul",
       {},
