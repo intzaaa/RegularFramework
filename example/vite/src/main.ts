@@ -189,6 +189,7 @@ ae(
 
 ae(root, NewTimer(), hr);
 
+/*
 const start = ns(0);
 const range = 5;
 setInterval(() => {
@@ -198,7 +199,6 @@ setInterval(() => {
   }
 }, 30000);
 
-/*
 const data = nr(async () => {
   return await import("regular-framework/client").then(({ gvb }) => gvb());
 });
