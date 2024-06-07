@@ -9,7 +9,7 @@ type Resource<T> = ReadonlySignal<T | undefined> & {
 
 type FetchParameters = Parameters<typeof fetch>;
 
-function NewResource<T>(input: () => Promise<T>): Resource<T>;
+function NewResource<T>(func: () => Promise<T>): Resource<T>;
 function NewResource<T = Response>(input: FetchParameters[0], init?: FetchParameters[1], processResponse?: (response: Response) => Promise<T>): Resource<T>;
 
 function NewResource<T = Response>(

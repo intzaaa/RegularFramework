@@ -3,7 +3,7 @@ import { presetMini } from "unocss/preset-mini";
 import initUnocssRuntime from "@unocss/runtime";
 */
 
-import { ne, wre, ae, nsi, Styles, nr } from "regular-framework/dev/client";
+import { ne, wre, ae, ns, Styles, nr } from "regular-framework/dev/client";
 import { NewTimer } from "./components/timer";
 
 const root = ne("div", {
@@ -26,7 +26,7 @@ initUnocssRuntime({
 
 wre(root);
 
-const count = nsi(0);
+const count = ns(0);
 
 const hr = () => ne("hr");
 
@@ -52,7 +52,7 @@ ae(
   hr
 );
 
-const input = nsi("");
+const input = ns("");
 
 ae(
   root,
@@ -99,8 +99,8 @@ ae(
   hr
 );
 
-const ifShowP = nsi(false);
-const log = nsi<string[]>([]);
+const ifShowP = ns(false);
+const log = ns<string[]>([]);
 const p = ne(
   "p",
   {
@@ -189,7 +189,7 @@ ae(
 
 ae(root, NewTimer(), hr);
 
-const start = nsi(0);
+const start = ns(0);
 const range = 5;
 setInterval(() => {
   start.value = start.value + 1;
@@ -198,6 +198,7 @@ setInterval(() => {
   }
 }, 30000);
 
+/*
 const data = nr(async () => {
   return await import("regular-framework/client").then(({ gvb }) => gvb());
 });
@@ -243,6 +244,7 @@ ae(
   ),
   hr
 );
+*/
 
 ae(
   root,

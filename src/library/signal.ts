@@ -2,7 +2,7 @@ import { signal as NewSignal, computed as NewComputedSignal, effect as NewEffect
 
 export { NewSignal, NewComputedSignal, NewEffect, NewBatch, NewUntracked };
 
-export { NewSignal as nsi, NewComputedSignal as ncs, NewEffect as nef, NewBatch as nbt, NewUntracked as nut };
+export { NewSignal as ns, NewComputedSignal as nc, NewEffect as nf, NewBatch as nb, NewUntracked as nu };
 
 export { Signal } from "@preact/signals-core";
 
