@@ -4,6 +4,8 @@
 
 import { JSDOM } from "jsdom";
 
+export const Window = new JSDOM().window;
+
 import { GetElementFunctionGroup } from "./base/element";
 
 export const {
@@ -22,6 +24,6 @@ export const {
   //
   WatchRootElement,
   wre,
-} = GetElementFunctionGroup(new JSDOM().window);
+} = GetElementFunctionGroup(Window);
 
 export * from "./library";
