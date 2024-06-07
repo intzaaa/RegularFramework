@@ -1,8 +1,8 @@
-import { NewElement, NewSignal, NewEffect } from "regular-framework/dev/client";
+import { NewElement, NewSignal, NewEffect, Component } from "regular-framework/dev/client";
 
 import styles from "./timer.module.css";
 
-export const NewTimer = () => {
+export const NewTimer: Component = () => {
   type State = "idle" | "running" | "paused" | "stopped";
   const state = NewSignal<State>("idle");
   const duration = NewSignal(0);

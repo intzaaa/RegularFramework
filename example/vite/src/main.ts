@@ -1,7 +1,9 @@
+/*
 import { presetMini } from "unocss/preset-mini";
 import initUnocssRuntime from "@unocss/runtime";
+*/
 
-import { ne, wre, ae, nsi, gvb, Styles, nr } from "regular-framework/dev/client";
+import { ne, wre, ae, nsi, Styles, nr } from "regular-framework/dev/client";
 import { NewTimer } from "./components/timer";
 
 const root = ne("div", {
@@ -12,6 +14,7 @@ const root = ne("div", {
 
 ae(document.body, root);
 
+/*
 initUnocssRuntime({
   defaults: {
     presets: [presetMini],
@@ -19,6 +22,7 @@ initUnocssRuntime({
   autoPrefix: true,
   rootElement: () => root,
 });
+*/
 
 wre(root);
 
@@ -139,6 +143,7 @@ ae(
   hr
 );
 
+/*
 const blur = nsi(0);
 setInterval(() => {
   blur.value = 2.5 * Math.random();
@@ -180,6 +185,7 @@ ae(
   }),
   hr
 );
+*/
 
 ae(root, NewTimer(), hr);
 
@@ -187,10 +193,16 @@ const start = nsi(0);
 const range = 5;
 setInterval(() => {
   start.value = start.value + 1;
-  if (start.value >= gvb().length - range) {
+  if (start.value >= 50 - range) {
     start.value = 0;
   }
 }, 30000);
+
+const data = nr(async () => {
+  return await import("regular-framework/client").then(({ gvb }) => gvb());
+});
+
+data.load();
 
 ae(
   root,
@@ -206,27 +218,28 @@ ae(
         overflowY: "scroll",
       },
     },
-    ne("tr", {}, ...Object.keys(gvb()[0]).map((verb) => ne("th", {}, verb))),
-    () =>
-      gvb()
-        .slice(start.value, start.value + range)
-        .map((row) =>
-          ne(
-            "tr",
-            {},
-            ...Object.values(row).map((value) =>
-              ne(
-                "td",
-                {
-                  styles: {
-                    textAlign: "center",
+    () => [
+      Object.keys(data.value?.[0] ?? {}).map((key) => ne("th", {}, key)),
+      data.state.value === "ready"
+        ? data.value?.slice(start.value, start.value + range).map((row) =>
+            ne(
+              "tr",
+              {},
+              ...Object.values(row).map((value) =>
+                ne(
+                  "td",
+                  {
+                    styles: {
+                      textAlign: "center",
+                    },
                   },
-                },
-                value
+                  value
+                )
               )
             )
           )
-        )
+        : "Loading...",
+    ]
   ),
   hr
 );

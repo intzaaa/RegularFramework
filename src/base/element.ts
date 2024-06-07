@@ -7,6 +7,8 @@ import { GetValue, StaticFinal, Final, GetFlatValue } from "../library/value";
 import diff from "../library/diff";
 import { isNotNil } from "ramda";
 
+export type Component = (...parameters: any[]) => Final<Element>;
+
 type LifecycleEvents = {
   type: "add" | "remove";
   target: Node;

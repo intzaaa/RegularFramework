@@ -9,7 +9,14 @@ type Resource<T> = ReadonlySignal<T | undefined> & {
 
 type FetchParameters = Parameters<typeof fetch>;
 
-export const NewResource = <T = Response>(input: FetchParameters[0], init?: FetchParameters[1], processResponse?: (response: Response) => Promise<T>) => {
+function NewResource<T>(input: () => Promise<T>): Resource<T>;
+function NewResource<T = Response>(input: FetchParameters[0], init?: FetchParameters[1], processResponse?: (response: Response) => Promise<T>): Resource<T>;
+
+function NewResource<T = Response>(
+  input: FetchParameters[0] | (() => Promise<T>),
+  init?: FetchParameters[1],
+  processResponse?: (response: Response) => Promise<T>
+) {
   const _state = NewSignal<ResourceState>("idle");
   const state = NewComputedSignal(() => _state.value);
 
@@ -18,23 +25,32 @@ export const NewResource = <T = Response>(input: FetchParameters[0], init?: Fetc
 
   const load = async () => {
     _state.value = "loading";
-    const response = await fetch(input, init);
-    if (response.ok) {
-      if (processResponse) {
-        _resource.value = (await processResponse(response)) as T;
-      } else {
-        _resource.value = response as any;
+    if (typeof input === "function") {
+      try {
+        _resource.value = await input();
+        _state.value = "ready";
+      } catch (error) {
+        _state.value = "errored";
       }
-      _state.value = "ready";
     } else {
-      _state.value = "errored";
+      const response = await fetch(input, init);
+      if (response.ok) {
+        if (processResponse) {
+          _resource.value = (await processResponse(response)) as T;
+        } else {
+          _resource.value = response as any;
+        }
+        _state.value = "ready";
+      } else {
+        _state.value = "errored";
+      }
     }
   };
 
-  resource.state = Object.seal(state);
+  resource.state = state;
   resource.load = load;
 
   return Object.seal(resource);
-};
+}
 
-export { NewResource as nr };
+export { NewResource, NewResource as nr };
