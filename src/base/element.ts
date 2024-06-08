@@ -6,12 +6,14 @@ import { GetValue, StaticFinal, Final, GetFlatValue } from "../library/value";
 
 import diff from "../library/diff";
 import { isNotNil } from "ramda";
+import { RouteResult } from "../library/router";
 
 export type Component = (...parameters: any[]) => Final<Element>;
 
 type LifecycleEvents = {
   type: "add" | "remove";
   target: Node;
+  data?: RouteResult<Component>;
 };
 
 export type Events = Event | LifecycleEvents;
@@ -46,6 +48,7 @@ export const GetElementFunctionGroup = (window: Window | JSDOM["window"]) => {
   const _: ElementFunctionGroup = {
     NewElement(tag, attributes, ...children) {
       const element = window.document.createElement(GetValue(tag));
+
       _.SetElementAttribute(element, attributes);
       _.AddElement(element, ...children);
       return element;

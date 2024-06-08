@@ -1,3 +1,5 @@
+export const Window = globalThis.window;
+
 import { GetElementFunctionGroup } from "./base/element";
 
 export type * from "./base/element";
@@ -18,6 +20,12 @@ export const {
   //
   WatchRootElement,
   wre,
-} = GetElementFunctionGroup(globalThis.window);
+} = GetElementFunctionGroup(Window);
+
+export * from "./base/page";
+
+import { PageRouter as _PageRouter, PageRegistry } from "./base/page";
+
+export const PageRouter = (registry: PageRegistry) => _PageRouter(Window, registry);
 
 export * from "./library";

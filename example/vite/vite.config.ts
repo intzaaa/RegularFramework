@@ -8,11 +8,5 @@ export default defineConfig({
     minify: true,
     cssMinify: true,
     cssCodeSplit: true,
-    rollupOptions: {
-      input: {
-        main: "./index.html",
-        "component-party": "./component-party/index.html",
-      },
-    },
   },
 });

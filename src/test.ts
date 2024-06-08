@@ -1,4 +1,4 @@
-import { GetRoute, RouteRegistry } from "./base/router";
+import { GetRoute, RouteRegistry } from "./library/router";
 
 const registry: RouteRegistry<any> = [];
 
