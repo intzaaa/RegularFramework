@@ -7,23 +7,21 @@ export type RouteEntry<T> = {
 
 export type RouteRegistry<T> = RouteEntry<T>[];
 
-export type RouteResult<T> =
-  | {
-      params: {
-        [key: string]: string;
-      };
-      data: T;
-    }
-  | undefined;
+export type RouteResult<T> = {
+  match: {
+    [key: string]: string;
+  };
+  data: T;
+};
 
-const GetRoute = <T>(registry: RouteRegistry<T>, input: string): RouteResult<T> => {
+const GetRoute = <T>(registry: RouteRegistry<T>, input: string): RouteResult<T> | undefined => {
   const _input = input.split("/").filter((v) => v !== "");
 
   for (const { path, data } of registry) {
     if (typeof path === "function") {
       if (path(input)) {
         return {
-          params: {},
+          match: {},
           data,
         };
       }
@@ -39,7 +37,7 @@ const GetRoute = <T>(registry: RouteRegistry<T>, input: string): RouteResult<T> 
         trimmedRestInput.filter((v, i) => path[i] === v || Array.isArray(path[i])).length === trimmedRestInput.length
       ) {
         return {
-          params: Object.fromEntries(
+          match: Object.fromEntries(
             trimmedRestPath
               .map((v, i) => {
                 if (Array.isArray(v)) {

@@ -1,15 +1,29 @@
 import type { JSDOM } from "jsdom";
 
+import { Final } from "../library/value";
 import { NewComputedSignal, NewSignal } from "../library/signal";
-import { GetRoute, RouteRegistry } from "../library/router";
+import { GetRoute, RouteRegistry, RouteResult } from "../library/router";
 
-import { Component, Events, GetElementFunctionGroup } from "./element";
-import { AddElement } from "../client";
+import { Events, GetElementFunctionGroup } from "./element";
 
-export type PageRegistry = RouteRegistry<Component>;
+export type PageData = {
+  match: RouteResult<Page>["match"];
+  // For future use
+};
 
-export const PageRouter = async (window: Window | JSDOM["window"], registry: PageRegistry, callback?: (event: Events) => void) => {
-  const { NewElement, WatchRootElement } = GetElementFunctionGroup(window);
+export type Page = (data: PageData, ...parameters: any[]) => Final<Element>;
+
+export type PageRegistry = RouteRegistry<Page>;
+
+export const PageRouter = (
+  window: Window | JSDOM["window"],
+  registry: PageRegistry,
+  config?: {
+    base?: string;
+  },
+  callback?: (event: Events) => void
+) => {
+  const { NewElement, AddElement, WatchRootElement } = GetElementFunctionGroup(window);
 
   const location = NewSignal<URL>(new URL(window.location.href));
 
@@ -32,22 +46,24 @@ export const PageRouter = async (window: Window | JSDOM["window"], registry: Pag
       },
       error,
       // TODO: ALLOW SETTING BASE URL
-      NewElement("p", {}, NewElement("a", { href: "/" }, "Go to Home"))
+      NewElement("p", {}, NewElement("a", { href: config?.base ?? "/" }, "Go back to Home"))
     );
 
   let pushStateLock = true;
   const page = NewComputedSignal(() => {
     if (location.value.origin !== window.location.origin) {
       window.location.href = location.value.href;
-      return "Redirecting...";
+      return `Redirecting to ${location.value.href}...`;
     } else {
-      const route = GetRoute(registry, location.value.pathname);
+      const route = GetRoute(registry, location.value.pathname.replace(config?.base ?? "", ""));
       if (pushStateLock) {
         pushStateLock = false;
       } else {
-        window.history.pushState(null, "", location.value.href);
+        const _location = new URL(location.value.href);
+        // _location.pathname = _location.pathname.replace(config?.base ?? "", "");
+        window.history.pushState(null, "", _location.href);
       }
-      return route?.data ?? error(`Could not find route for ${location.value.pathname}`);
+      return () => route?.data({ match: route?.match }) ?? error(`Could not find route for ${location.value.pathname}`);
     }
   });
 
@@ -60,7 +76,10 @@ export const PageRouter = async (window: Window | JSDOM["window"], registry: Pag
   WatchRootElement(element, (event) => {
     if (event.target instanceof HTMLAnchorElement && event.type === "click") {
       event.preventDefault();
-      location.value = new URL(event.target.href);
+      const url = new URL(event.target.href);
+      url.pathname = config?.base + url.pathname;
+      console.log(url);
+      location.value = url;
     }
     callback?.(event);
   });
