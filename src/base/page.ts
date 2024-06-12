@@ -1,12 +1,13 @@
 import type { JSDOM } from "jsdom";
 
 import { Final } from "../library/value";
-import { NewComputedSignal, NewSignal } from "../library/signal";
+import { NewComputedSignal, NewSignal, Signal } from "../library/signal";
 import { GetRoute, RouteRegistry, RouteResult } from "../library/router";
 
 import { Events, GetElementFunctionGroup } from "./element";
 
 export type PageData = {
+  location: Signal<URL>;
   match: RouteResult<Page>["match"];
   // For future use
 };
@@ -63,7 +64,7 @@ export const PageRouter = (
         // _location.pathname = _location.pathname.replace(config?.base ?? "", "");
         window.history.pushState(null, "", _location.href);
       }
-      return () => route?.data({ match: route?.match }) ?? error(`Could not find route for ${location.value.pathname}`);
+      return () => route?.data({ location: location, match: route?.match }) ?? error(`Could not find route for ${location.value.pathname}`);
     }
   });
 
