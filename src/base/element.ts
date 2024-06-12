@@ -23,6 +23,7 @@ export type Attributes = Final<
     [key: string]: Final<any>;
     styles?: Final<Styles>;
     events?: (events: Events) => void;
+    self?: (self: Element) => void;
   }>
 >;
 
@@ -56,7 +57,7 @@ export const GetElementFunctionGroup = (window: Window | JSDOM["window"]) => {
 
         for (const key in _attributes) {
           NewEffect(() => {
-            if (!["styles", "events"].includes(key)) _element.setAttribute(key, _attributes[GetValue(key as keyof typeof _attributes)]);
+            if (!["styles", "events", "self"].includes(key)) _element.setAttribute(key, _attributes[GetValue(key as keyof typeof _attributes)]);
           });
         }
 
@@ -80,6 +81,8 @@ export const GetElementFunctionGroup = (window: Window | JSDOM["window"]) => {
             event.detail.data
           );
         });
+
+        _attributes?.self?.(_element);
       });
 
       return _element;
