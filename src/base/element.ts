@@ -27,19 +27,15 @@ export type Attributes = Final<
 >;
 
 export type ElementFunctionGroup = {
-  NewElement: <T extends keyof (HTMLElementTagNameMap & SVGElementTagNameMap)>(
-    tag: StaticFinal<T>,
-    attributes?: Attributes,
-    ...children: Final<any>[]
-  ) => Element;
+  NewElement: <T extends keyof HTMLElementTagNameMap>(tag: StaticFinal<T>, attributes?: Attributes, ...children: Final<any>[]) => HTMLElementTagNameMap[T];
 
-  SetElementAttribute: (element: StaticFinal<Element>, attributes?: Attributes) => Element;
+  SetElementAttribute: <T extends Element>(element: StaticFinal<T>, attributes?: Attributes) => T;
 
-  AddElement: (parent: StaticFinal<Element>, ...children: Final<any>[]) => Element;
+  AddElement: <T extends Element>(parent: StaticFinal<T>, ...children: Final<any>[]) => T;
 
-  UpdateElement: (target: StaticFinal<Element>, source: StaticFinal<Element>) => Element;
+  // UpdateElement: (target: StaticFinal<Element>, source: StaticFinal<Element>) => Element;
 
-  WatchRootElement: (rootElement: StaticFinal<Element>, callback?: (event: Events) => any) => Element;
+  WatchRootElement: <T extends Element>(rootElement: StaticFinal<T>, callback?: (event: Events) => void) => T;
 };
 
 export const GetElementFunctionGroup = (window: Window | JSDOM["window"]) => {
@@ -165,11 +161,11 @@ export const GetElementFunctionGroup = (window: Window | JSDOM["window"]) => {
     //   children.forEach((child) => _parent.removeChild(GetValue(child)));
     // },
 
-    UpdateElement(target, source) {
-      const _source = GetValue(source);
-      GetValue(target).replaceWith(_source);
-      return _source;
-    },
+    // UpdateElement(target, source) {
+    //   const _source = GetValue(source);
+    //   GetValue(target).replaceWith(_source);
+    //   return _source;
+    // },
 
     WatchRootElement(rootElement, callback) {
       const _rootElement = GetValue(rootElement);
@@ -227,7 +223,7 @@ export const GetElementFunctionGroup = (window: Window | JSDOM["window"]) => {
     ne: _.NewElement,
     sea: _.SetElementAttribute,
     ae: _.AddElement,
-    ue: _.UpdateElement,
+    // ue: _.UpdateElement,
     wre: _.WatchRootElement,
   };
 };

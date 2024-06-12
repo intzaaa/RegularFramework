@@ -1,7 +1,9 @@
 {
   "include": ["src/**/*"],
   "exclude": ["example/**/*"],
-  "buildOptions": {},
+  "buildOptions": {
+    "force": true
+  },
   "compilerOptions": {
     "isolatedModules": true,
     "moduleResolution": "Bundler",

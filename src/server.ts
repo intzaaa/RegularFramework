@@ -19,8 +19,8 @@ export const {
   AddElement,
   ae,
   //
-  UpdateElement,
-  ue,
+  // UpdateElement,
+  // ue,
   //
   WatchRootElement,
   wre,
