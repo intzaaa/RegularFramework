@@ -77,7 +77,7 @@ export const PageRouter = (
     if (event.target instanceof HTMLAnchorElement && event.type === "click") {
       event.preventDefault();
       const url = new URL(event.target.href);
-      url.pathname = config?.base + url.pathname;
+      url.pathname = config?.base ?? "" + url.pathname;
       console.log(url);
       location.value = url;
     }

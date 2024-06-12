@@ -1,22 +1,6 @@
 # RegularFramework
 
-> Note 1: This project is still in the early stages of development. APIs may change in the future. Please use with caution.
->
-> Note 2: This project is inspired by `Mithril.js`, but it is not a Mithril.js clone.
->
-> Note 3: This project was not inspired by `uhtml` at the beginning of its development, and I didn't know about it until later.
-
 **R**egular**F**ramework is a new framework for building web pages that is simple, powerful, and elegant.
-
-## Roadmap
-
-- [x] Element
-- [x] Reactivity
-- [ ] Router
-- [ ] Server side rendering
-- [ ] Static site generation
-
-Tasks are listed in order of priority.
 
 ## Features
 
@@ -34,6 +18,7 @@ pnpm i regular-framework
 import { NewElement /*, ... */ } from 'regular-framework/client';
 
 // or directly from the CDN
+
 import { NewElement /*, ... */ } from 'https://esm.sh/regular-framework/client';
 ```
 
@@ -74,20 +59,11 @@ AddElement(root, NewElement('h1', {}, 'Hello, world!'));
 - `WatchRootElement`: `wre`
 - ...
 
-But be careful! Aliases are not always a good thing, they may **make your code harder to read**.
-
 ### 5. `NewSignal`: Bring reactivity to your app
-
-RegularFramework's reactivity system is based on `@preact/signals-core`.
 
 ```ts
 const signal = NewSignal('Hi!');
-
 AddElement(root, NewElement('h1', {}, signal));
-
-// or
-AddElement(root, NewElement('h1', {}, () => signal.value));
-
 signal.value = 'Bye!';
 ```
 
@@ -98,10 +74,6 @@ GetValue(() => () => 'Powerful') === 'Powerful' // true
 GetValue(() => signal) === 'Bye!' // true
 GetValue(114514) === 114514 // true, of course
 ```
-
-`GetValue` will recursively evaluate the value until it is no longer a function or a signal. If you notice that the parameter type of the RegularFramework built-in function is `Final<T>`, it means that you can pass a function or a signal to it and it will be updated responsively.
-
-If you want to finally return a function, you should wrap it in `StopGetValue`, otherwise it will be evaluated instead of returned.
 
 ### 7. Visit the API and example sites to learn more
 

@@ -8,7 +8,9 @@ const pageRegistry: PageRegistry = [
     data: () => {
       return NewElement(
         "div",
-        {},
+        {
+          class: "font-bold underline",
+        },
         NewElement("h1", {}, "RegularFramework"),
         NewElement(
           "ul",

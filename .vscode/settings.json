@@ -3,5 +3,5 @@
     "javascript": "javascript",
     "typescript": "javascript"
   },
-  "cSpell.words": ["csstype", "egular", "Giammarchi", "iife", "linkedom", "preact", "ramework", "unocss", "Unprotect"]
+  "cSpell.words": ["csstype", "egular", "Giammarchi", "iife", "linkedom", "preact", "ramework", "tailwindcss", "unocss", "Unprotect"]
 }

@@ -60,13 +60,22 @@ export const GetElementFunctionGroup = (window: Window | JSDOM["window"]) => {
 
         for (const key in _attributes) {
           NewEffect(() => {
-            if (!["styles", "events"].includes(key)) _element.setAttribute(key, _attributes[GetValue(key)]);
+            if (!["styles", "events"].includes(key)) _element.setAttribute(key, _attributes[GetValue(key as keyof typeof _attributes)]);
           });
         }
 
         NewEffect(() => {
           const _styles = GetValue(_attributes?.styles);
-          if (_element instanceof (HTMLElement || SVGElement)) Object.assign(_element.style, _styles);
+          if (_styles) {
+            for (const [key, value] of Object.entries(_styles)) {
+              NewEffect(() => {
+                if (_element instanceof (HTMLElement || SVGElement)) {
+                  // @ts-ignore
+                  _element.style[key] = value;
+                }
+              });
+            }
+          }
         });
 
         _element.addEventListener("receive", (event) => {
