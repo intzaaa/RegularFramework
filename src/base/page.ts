@@ -11,7 +11,7 @@ export type PageData = {
   // For future use
 };
 
-export type Page = <T>(data: PageData, ...parameters: any[]) => Final<T>;
+export type Page = (data: PageData, ...parameters: any[]) => Final<Element>;
 
 export type PageRegistry = RouteRegistry<Page>;
 
